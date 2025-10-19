@@ -8,10 +8,9 @@ import GraphVisualizer from './GraphVisualizer';
 const EXAMPLE_QUESTIONS = [
   "Solve the quadratic equation: x² - 5x + 6 = 0",
   "Find the derivative of f(x) = 3x³ - 2x² + 5x - 1",
-  "Calculate the area of a circle with radius 7 cm",
   "Graph the function y = 2x + 3",
   "Solve the system: 2x + y = 7 and x - y = 2",
-  "Find the integral of ∫(4x³ + 2x)dx",
+  "Solve for the x: log₂(x) = 3",
 ];
 
 const MathSolver = ({ apiConfig }) => {
@@ -75,7 +74,7 @@ const MathSolver = ({ apiConfig }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 mb-8">
       {/* Input Section */}
       <div className="glass-effect rounded-2xl p-6 shadow-2xl">
         <div className="flex items-center space-x-2 mb-4">
@@ -88,7 +87,7 @@ const MathSolver = ({ apiConfig }) => {
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Enter any math problem... (e.g., Solve x² - 4 = 0, Find derivative of x³, Graph y = sin(x))"
+              placeholder="Enter any math problem..."
               rows="4"
               className="input-dark w-full rounded-xl p-4 resize-none"
               disabled={loading}

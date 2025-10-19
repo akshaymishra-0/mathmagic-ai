@@ -215,3 +215,29 @@ a {
 .animate-pulse-slow {
   animation: pulse-slow 4s ease-in-out infinite;
 }
+
+.animate-up-down {
+  animation: up-down 3s ease-in-out infinite;
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 4s ease-in-out infinite;
+}
+
+@keyframes up-down {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes fade-in-out {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}

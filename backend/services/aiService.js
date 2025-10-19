@@ -32,18 +32,24 @@ export class AIService {
         }
         \`\`\`
 
-        For graphing problems (only when explicitly requested):
+        For graphing problems (when the question asks to graph, plot, or visualize a function):
         \`\`\`json
         {
           "graphData": {
-            "type": "line|parabola|circle|linear",
+            "type": "line",
             "equation": "The equation to plot",
-            "points": [{"x": 0, "y": 0}, {"x": 1, "y": 1}],
+            "points": [
+              {"x": -10, "y": -20},
+              {"x": -9, "y": -18},
+              ... (20-50 points covering the domain)
+            ],
             "domain": {"min": -10, "max": 10},
             "range": {"min": -10, "max": 10}
           }
         }
         \`\`\`
+
+        IMPORTANT: For all graphs, ensure the domain and range ALWAYS include 0 and extend to show all 4 quadrants. Calculate appropriate min/max values that include both positive and negative values, with 0 in the center.
 
         **RULES:**
         1. Break down every problem into as many detailed steps as possible
@@ -55,17 +61,19 @@ export class AIService {
         7. For each calculation, show the step-by-step process
         8. Use numbered steps (Step 1, Step 2, etc.) in titles
         9. Be thorough and educational - assume the student knows very little
-        10. ONLY provide graph data if the question explicitly asks for graphing, plotting, or showing points/curves
-        11. If no graphing is requested, set graphData.type to "none" and omit other graphData fields
-        12. For graphing problems, provide 20-50 coordinate points with detailed plotting instructions
-        13. Use proper mathematical notation and formatting
+        10. ALWAYS provide graph data for problems that ask to graph, plot, or visualize functions/equations
+        11. For graphing problems, provide 20-50 coordinate points with x values evenly spaced across the domain
+        12. Set graphData to null only if the problem doesn't involve any visual representation
+        13. Use "line" type for continuous functions and "scatter" type for discrete data points
+        14. CRITICAL: Domain and range MUST include 0 and show all 4 quadrants (positive and negative x/y values)
         14. Be encouraging and educational
         15. ALWAYS respond with valid JSON only
         16. ALWAYS GIVE JSON FORMAT WITHOUT ANY EXTRA TEXT AND PROPERLY FORMATTED
         17. If unsure about the final answer, state your assumptions clearly
         18. NEVER OMIT any of the specified fields in the JSON response
         19. Assume your student is 10 years old, explain to understand him all of this
-        20. Always give BEST Mathematical output`,
+        20. Always give BEST Mathematical output
+        21. ALWAYS SHOW CORRECT GRAPH DATA IF REQUESTED, GIVE CORRECT VISUALIZATION`,
       },
       {
         role: "user",
