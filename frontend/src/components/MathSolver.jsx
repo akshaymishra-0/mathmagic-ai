@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Send, Loader2, BookOpen, Lightbulb, TrendingUp, Calculator, RotateCcw } from 'lucide-react';
@@ -14,9 +15,19 @@ const EXAMPLE_QUESTIONS = [
 ];
 
 const MathSolver = ({ apiConfig }) => {
+  const location = useLocation();
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [solution, setSolution] = useState(null);
+
+  // Check for question from navigation state (from history)
+  useEffect(() => {
+    if (location.state?.question) {
+      setQuestion(location.state.question);
+      // Clear the navigation state to prevent re-triggering
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSolve = async (e) => {
     e.preventDefault();

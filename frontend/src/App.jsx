@@ -1,11 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import MathSolver from './components/MathSolver';
-import { Calculator, Github, Sparkles, ArrowRight, BookOpen, Zap, Users, ArrowLeft } from 'lucide-react';
+import Login from './components/auth/Login';
+import Signup from './components/auth/Signup';
+import ConfirmationModal from './components/ConfirmationModal';
+import axios from 'axios';
+import { Calculator, Github, Sparkles, ArrowRight, BookOpen, Zap, Users, ArrowLeft, LogOut, User } from 'lucide-react';
 
 function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
+
+function AppContent() {
   const location = useLocation();
   const isHomepage = location.pathname === '/';
+  const { user, logout } = useAuth();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    setShowLogoutModal(false);
+  };
 
   return (
     <div className="min-h-screen bg-dark-bg flex flex-col">
@@ -105,6 +125,36 @@ function App() {
               >
                 <Github className="w-5 h-5" />
               </a>
+              {user ? (
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 text-sm text-gray-300">
+                    <User className="w-4 h-4" />
+                    <span>{user.name}</span>
+                  </div>
+                  <button
+                    onClick={() => setShowLogoutModal(true)}
+                    className="p-2 rounded-lg bg-dark-hover hover:bg-red-600/20 hover:text-red-400 transition-colors"
+                    title="Logout"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <a
+                    href="/login"
+                    className="px-4 py-2 text-sm font-medium text-accent-purple hover:text-accent-blue transition-colors"
+                  >
+                    Sign In
+                  </a>
+                  <a
+                    href="/signup"
+                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all"
+                  >
+                    Sign Up
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -113,7 +163,9 @@ function App() {
       <div className="flex-grow">
         <Routes>
           <Route path="/" element={<Homepage />} />
-          <Route path="/solve" element={<Solver />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/solve" element={<ProtectedSolver />} />
         </Routes>
       </div>
 
@@ -128,12 +180,53 @@ function App() {
           </div>
         </div>
       </footer>
+
+      {/* Logout Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+        title="Sign Out"
+        message="Are you sure you want to sign out of your MathMagic account?"
+        confirmText="Sign Out"
+        cancelText="Cancel"
+        type="danger"
+      />
     </div>
   );
 }
 
 const Homepage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [history, setHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      fetchHistory();
+    }
+  }, [user]);
+
+  const fetchHistory = async () => {
+    try {
+      setHistoryLoading(true);
+      const response = await axios.get('/api/auth/history');
+      setHistory(response.data.data.calculations || []);
+    } catch (error) {
+      console.error('Failed to fetch history:', error);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const handleGetStarted = () => {
+    if (user) {
+      navigate('/solve');
+    } else {
+      navigate('/login');
+    }
+  };
 
   return (
     <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -163,13 +256,74 @@ const Homepage = () => {
           </div>
         </div>
         <button
-          onClick={() => navigate('/solve')}
+          onClick={handleGetStarted}
           className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold rounded-xl hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all duration-300 shadow-lg hover:shadow-xl"
         >
-          Get Started
+          {user ? 'Continue Solving' : 'Get Started'}
           <ArrowRight className="ml-2 w-5 h-5" />
         </button>
       </div>
+
+      {/* History Section - Only for logged-in users */}
+      {user && (
+        <div className="py-16">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
+              Your Recent Calculations
+            </h2>
+            <div className="bg-gradient-to-br from-dark-card/50 to-dark-card/30 backdrop-blur-sm rounded-2xl border border-dark-border/50 p-6">
+              {historyLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-purple mx-auto mb-4"></div>
+                  <p className="text-gray-400">Loading your history...</p>
+                </div>
+              ) : history.length > 0 ? (
+                <div className="space-y-4">
+                  {history.map((calc, index) => (
+                    <div
+                      key={calc.id}
+                      className="flex items-center justify-between p-4 bg-dark-hover/50 rounded-xl border border-dark-border/30 hover:border-accent-purple/30 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white font-medium truncate mb-2">
+                          {calc.question}
+                        </p>
+                        <p className="text-sm text-gray-400">
+                          {new Date(calc.createdAt).toLocaleDateString()} at {new Date(calc.createdAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                      <div className="ml-4 flex items-center space-x-3">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-accent-purple/20 text-accent-purple border border-accent-purple/30">
+                          #{history.length - index}
+                        </span>
+                        <button
+                          onClick={() => navigate('/solve', { state: { question: calc.question } })}
+                          className="px-4 py-2 bg-gradient-to-r from-accent-purple to-accent-blue text-white text-sm font-medium rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all duration-200 shadow-md hover:shadow-lg"
+                        >
+                          Recalculate
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Calculator className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">No calculations yet</h3>
+                  <p className="text-gray-400 mb-6">Start solving math problems to see your history here!</p>
+                  <button
+                    onClick={() => navigate('/solve')}
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold rounded-xl hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all duration-300"
+                  >
+                    Solve Your First Problem
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* App Details Section */}
       <div className="py-16">
@@ -216,8 +370,25 @@ const Homepage = () => {
   );
 };
 
-const Solver = () => {
+const ProtectedSolver = () => {
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dark-bg flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-purple mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
 
   const apiConfig = {
     provider: 'openrouter',

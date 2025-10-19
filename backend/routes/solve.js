@@ -1,9 +1,12 @@
 import express from 'express';
 import { createAIService } from '../services/aiService.js';
+import { authenticateToken } from './auth.js';
+import User from '../models/User.js';
+import Calculation from '../models/Calculation.js';
 
 const router = express.Router();
 
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const { question, provider, modelName } = req.body;
 
@@ -28,6 +31,22 @@ router.post('/', async (req, res) => {
 
     const aiService = createAIService(aiProvider, aiApiKey, aiModel);
     const solution = await aiService.solveMath(question);
+
+    // Save calculation to database
+    const calculation = new Calculation({
+      user: req.user.userId,
+      question,
+      solution,
+      provider: aiProvider,
+      modelName: aiModel
+    });
+
+    await calculation.save();
+
+    // Add to user's recent calculations
+    const user = await User.findById(req.user.userId);
+    user.addCalculation(calculation._id);
+    await user.save();
 
     res.json({
       success: true,

@@ -15,8 +15,9 @@ export class AIService {
         role: "system",
         content: `You are an expert mathematics tutor AI. Your task is to solve math problems with exceptional clarity and educational value.
 
-        **RESPONSE FORMAT (STRICT JSON):**
-        \`\`\`json
+        **IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON. Do not use markdown code blocks.**
+
+        **RESPONSE FORMAT (JSON only):**
         {
           "topic": "Branch of mathematics (e.g., Calculus, Algebra, Geometry)",
           "finalAnswer": "Clear, concise final answer",
@@ -28,26 +29,21 @@ export class AIService {
               "calculation": "The actual calculation broken down step by step (optional)"
             }
           ],
-          "graphData": null
-        }
-        \`\`\`
-
-        For graphing problems (when the question asks to graph, plot, or visualize a function):
-        \`\`\`json
-        {
           "graphData": {
-            "type": "line",
-            "equation": "The equation to plot",
+            "type": "line|scatter|bar",
+            "equation": "The equation to plot (for graphing problems only)",
             "points": [
-              {"x": -10, "y": -20},
-              {"x": -9, "y": -18},
+              {"x": number, "y": number},
               ... (20-50 points covering the domain)
             ],
-            "domain": {"min": -10, "max": 10},
-            "range": {"min": -10, "max": 10}
+            "domain": {"min": number, "max": number},
+            "range": {"min": number, "max": number}
           }
         }
-        \`\`\`
+
+        For non-graphing problems, set "graphData": null.
+
+        Solve this math problem: ${question}
 
         IMPORTANT: For all graphs, ensure the domain and range ALWAYS include 0 and extend to show all 4 quadrants. Calculate appropriate min/max values that include both positive and negative values, with 0 in the center.
 
@@ -129,26 +125,52 @@ export class AIService {
 
   parseResponse(content) {
     try {
-      // Extract JSON from markdown code blocks if present
-      const jsonMatch =
-        content.match(/```json\n([\s\S]*?)\n```/) ||
-        content.match(/```\n([\s\S]*?)\n```/);
+      // Clean the content first
+      let cleanContent = content.trim();
 
-      const jsonString = jsonMatch ? jsonMatch[1] : content;
-      const parsed = JSON.parse(jsonString.trim());
+      // Remove any leading/trailing markdown or text
+      cleanContent = cleanContent.replace(/^[\s\S]*?```(?:json)?\s*\n?/, '');
+      cleanContent = cleanContent.replace(/\n?```\s*[\s\S]*$/, '');
+
+      // Try to find JSON object boundaries
+      const startIndex = cleanContent.indexOf('{');
+      const lastIndex = cleanContent.lastIndexOf('}');
+
+      if (startIndex !== -1 && lastIndex !== -1 && lastIndex > startIndex) {
+        cleanContent = cleanContent.substring(startIndex, lastIndex + 1);
+      }
+
+      // Try to parse as JSON
+      const parsed = JSON.parse(cleanContent);
 
       // Validate structure
-      if (
-        !parsed.finalAnswer ||
-        !parsed.steps ||
-        !Array.isArray(parsed.steps)
-      ) {
-        throw new Error("Invalid response structure");
+      if (!parsed || typeof parsed !== 'object') {
+        throw new Error("Response is not a valid object");
+      }
+
+      // Ensure required fields exist
+      if (!parsed.finalAnswer && !parsed.topic) {
+        // If it's not our expected format, treat the whole response as the answer
+        return {
+          topic: "Mathematics",
+          finalAnswer: content,
+          steps: [
+            {
+              title: "Solution",
+              explanation: content,
+              formula: "",
+              calculation: "",
+            },
+          ],
+          graphData: null,
+        };
       }
 
       return parsed;
     } catch (error) {
       console.error("Parse Error:", error);
+      console.error("Raw content:", content);
+
       // Fallback response
       return {
         topic: "Mathematics",
