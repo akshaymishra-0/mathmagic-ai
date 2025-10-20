@@ -11,5 +11,24 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separate React and React DOM
+          'react-vendor': ['react', 'react-dom'],
+          // Separate routing
+          'router': ['react-router-dom'],
+          // Separate charting library
+          'charts': ['recharts'],
+          // Separate UI libraries
+          'ui': ['lucide-react', 'react-hot-toast'],
+          // Separate HTTP client
+          'http': ['axios']
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000 // Increase limit to 1000kb
   }
 })

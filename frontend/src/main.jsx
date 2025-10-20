@@ -7,7 +7,7 @@ import './index.css'
 import { Toaster } from 'react-hot-toast'
 
 // Configure axios
-axios.defaults.baseURL = 'http://localhost:5000';
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

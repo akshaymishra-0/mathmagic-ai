@@ -484,116 +484,89 @@ Tests backend connectivity on `http://localhost:5000/health`
 
 ## 🚀 Deployment
 
-### Prerequisites for Production
-- **MongoDB Database**: Set up MongoDB Atlas or local MongoDB instance
-- **Node.js**: Version 20.x or higher on production server
-- **SSL Certificate**: For HTTPS in production
-- **Domain Name**: Pointed to your server IP
-- **Reverse Proxy**: Nginx or Apache for serving static files and proxying API requests
+> 📖 **Detailed Deployment Guide**: See [DEPLOYMENT.md](DEPLOYMENT.md) for comprehensive step-by-step instructions
 
-### Production Build
-```bash
-# Install all dependencies
-npm run setup
+This application is designed to be deployed with the frontend on Vercel and the backend on Render.
 
-# Build frontend for production
-npm run build
+### Frontend Deployment (Vercel)
 
-# Start production servers
-npm run start
-```
+1. **Connect Repository**:
+   - Go to [Vercel](https://vercel.com) and sign in
+   - Click "New Project" and import your GitHub repository
+   - Configure the project:
+     - **Framework Preset**: Vite
+     - **Root Directory**: `frontend`
+     - **Build Command**: `npm run build`
+     - **Output Directory**: `dist`
 
-### Environment Configuration for Production
-Create `.env` file in backend directory with production values:
+2. **Environment Variables**:
+   - Add `VITE_BACKEND_URL` with your Render backend URL (e.g., `https://your-backend.onrender.com`)
 
+3. **Deploy**:
+   - Vercel will automatically build and deploy your frontend
+   - Note the deployment URL for CORS configuration
+
+### Backend Deployment (Render)
+
+1. **Connect Repository**:
+   - Go to [Render](https://render.com) and sign in
+   - Click "New +" and select "Web Service"
+   - Connect your GitHub repository
+   - Configure the service:
+     - **Runtime**: Node
+     - **Build Command**: (leave empty or `npm install`)
+     - **Start Command**: `npm start`
+     - **Root Directory**: `backend`
+
+2. **Environment Variables**:
+   - `NODE_ENV`: `production`
+   - `PORT`: `10000` (or any available port)
+   - `MONGODB_URI`: Your MongoDB Atlas connection string
+   - `JWT_SECRET`: A secure random string
+   - `AI_PROVIDER`: `openrouter`
+   - `API_KEY`: Your OpenRouter API key
+   - `MODEL_NAME`: `nvidia/nemotron-nano-9b-v2:free` (or your preferred model)
+   - `FRONTEND_URL`: Your Vercel frontend URL (e.g., `https://your-app.vercel.app`)
+
+3. **Database Setup**:
+   - Use MongoDB Atlas for production database
+   - Create a cluster and get the connection string
+   - Add your Render service IP to MongoDB Atlas whitelist (or use 0.0.0.0/0 for testing)
+
+4. **Deploy**:
+   - Render will build and deploy your backend
+   - Note the service URL for frontend configuration
+
+### Environment Configuration
+
+#### Backend (.env)
 ```env
 NODE_ENV=production
-PORT=5000
+PORT=10000
+FRONTEND_URL=https://your-vercel-app.vercel.app
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/mathmagic_prod
 JWT_SECRET=your_super_secure_jwt_secret_here
-OPENROUTER_API_KEY=your_production_openrouter_api_key
-FRONTEND_URL=https://yourdomain.com
+AI_PROVIDER=openrouter
+API_KEY=your_openrouter_api_key
+MODEL_NAME=nvidia/nemotron-nano-9b-v2:free
 ```
 
-### Database Setup
-1. **MongoDB Atlas** (Recommended):
-   - Create a new cluster
-   - Set up database user with read/write permissions
-   - Whitelist your server IP
-   - Get connection string
-
-2. **Local MongoDB**:
-   - Install MongoDB on your server
-   - Create database: `mathmagic_prod`
-   - Configure authentication
-
-### Server Setup (Ubuntu/Debian)
-```bash
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Install PM2 for process management
-sudo npm install -g pm2
-
-# Clone and setup
-git clone https://github.com/yourusername/mathmagic.git
-cd mathmagic
-npm run setup
-npm run build
-
-# Start with PM2
-pm2 start ecosystem.config.js --env production
-pm2 startup
-pm2 save
+#### Frontend (.env)
+```env
+VITE_BACKEND_URL=https://your-render-backend.onrender.com
 ```
 
-### Nginx Configuration
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com;
+### Deployment Checklist
 
-    # Redirect HTTP to HTTPS
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name yourdomain.com;
-
-    # SSL configuration
-    ssl_certificate /path/to/ssl/cert.pem;
-    ssl_certificate_key /path/to/ssl/private.key;
-
-    # Serve static files
-    location / {
-        root /path/to/mathmagic/frontend/dist;
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Proxy API requests
-    location /api {
-        proxy_pass http://localhost:5000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-    }
-}
-```
-
-### Security Considerations
-- **Environment Variables**: Never commit `.env` files
-- **API Keys**: Rotate regularly and use restricted keys
-- **Firewall**: Configure UFW/firewall rules
-- **Updates**: Keep dependencies updated
-- **Monitoring**: Set up logging and monitoring
-- **Backups**: Regular database backups
+- [ ] MongoDB Atlas database created and connection string obtained
+- [ ] OpenRouter API key obtained
+- [ ] JWT secret generated (use a strong random string)
+- [ ] Frontend deployed on Vercel
+- [ ] Backend deployed on Render
+- [ ] Environment variables configured in both services
+- [ ] CORS origin updated in backend with Vercel URL
+- [ ] Frontend VITE_BACKEND_URL updated with Render URL
+- [ ] Test authentication and math solving functionality
 
 ## 🤝 Contributing
 
