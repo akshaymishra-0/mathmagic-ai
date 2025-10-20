@@ -92,11 +92,11 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-br from-accent-purple to-accent-blue rounded-xl">
-                <Calculator className="w-6 h-6 text-white" />
+              <div className="p-1 md:p-2 bg-gradient-to-br from-accent-purple to-accent-blue rounded-xl">
+                <Calculator className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
+                <h1 className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
                   MathMagic
                 </h1>
                 <p className="text-xs text-gray-400">Powered by AI</p>
@@ -109,7 +109,7 @@ function AppContent() {
                 href="https://github.com/akshaymishra-0"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-dark-hover hover:bg-dark-border transition-colors"
+                className="hidden md:inline p-2 rounded-lg bg-dark-hover hover:bg-dark-border transition-colors"
               >
                 <Github className="w-5 h-5" />
               </a>
@@ -131,13 +131,13 @@ function AppContent() {
                 <div className="flex items-center space-x-2">
                   <a
                     href="/login"
-                    className="px-4 py-2 text-sm font-medium text-accent-purple hover:text-accent-blue transition-colors"
+                    className="px-1 py-1 text-sm font-medium text-accent-purple hover:text-accent-purple transition-colors"
                   >
                     Sign In
                   </a>
                   <a
                     href="/signup"
-                    className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all"
+                    className="px-2 md:px-4 py-2 text-sm font-medium text-white hover:text-white bg-gradient-to-r from-accent-purple to-accent-blue rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all shadow-lg hover:shadow-xl"
                   >
                     Sign Up
                   </a>
