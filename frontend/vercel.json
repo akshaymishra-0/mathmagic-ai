@@ -3,6 +3,6 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "rewrites": [
-    { "source": "/((?!api|calculator\\.svg).*)", "destination": "/index.html" }
+    { "source": "/((?!api|.*calculator\\.svg$).*)", "destination": "/index.html" }
   ]
 }

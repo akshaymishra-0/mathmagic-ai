@@ -128,7 +128,7 @@ function AppContent() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-4 md:space-x-6">
                   <a
                     href="/login"
                     className="px-1 py-1 text-sm font-medium text-accent-purple hover:text-accent-purple transition-colors"

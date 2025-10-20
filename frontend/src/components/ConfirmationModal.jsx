@@ -68,7 +68,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
           <div className="flex space-x-3">
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-3 bg-dark-hover hover:bg-dark-border text-gray-300 hover:text-white rounded-xl transition-all duration-200 font-medium"
+              className="flex-1 px-3 py-2 sm:px-4 sm:py-3 bg-dark-hover hover:bg-dark-border text-gray-300 hover:text-white rounded-xl transition-all duration-200 font-medium"
             >
               {cancelText}
             </button>
@@ -77,7 +77,7 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
                 onConfirm();
                 onClose();
               }}
-              className={`flex-1 px-4 py-3 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl ${getConfirmButtonStyle()}`}
+              className={`flex-1 px-3 py-2 sm:px-4 sm:py-3 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl ${getConfirmButtonStyle()}`}
             >
               {confirmText}
             </button>
