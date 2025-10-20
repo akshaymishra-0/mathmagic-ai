@@ -6,6 +6,40 @@ import Calculation from '../models/Calculation.js';
 
 const router = express.Router();
 
+// Function to cleanup old calculations, keeping only the 1000 most recent
+const cleanupOldCalculations = async () => {
+  try {
+    // Count total calculations
+    const totalCalculations = await Calculation.countDocuments();
+
+    if (totalCalculations > 5000) {
+      // Find calculations to delete (oldest ones beyond the 1000 limit)
+      const calculationsToDelete = await Calculation.find()
+        .sort({ createdAt: -1 }) // Sort by newest first
+        .skip(1000) // Skip the first 1000 (most recent)
+        .select('_id'); // Only get IDs for deletion
+
+      if (calculationsToDelete.length > 0) {
+        const idsToDelete = calculationsToDelete.map(calc => calc._id);
+
+        // Delete the old calculations
+        const deleteResult = await Calculation.deleteMany({ _id: { $in: idsToDelete } });
+
+        // Also clean up references in User documents
+        await User.updateMany(
+          { calculations: { $in: idsToDelete } },
+          { $pull: { calculations: { $in: idsToDelete } } }
+        );
+
+        console.log(`🧹 Cleaned up ${deleteResult.deletedCount} old calculations. Total remaining: ${totalCalculations - deleteResult.deletedCount}`);
+      }
+    }
+  } catch (error) {
+    console.error('Error during calculation cleanup:', error);
+    // Don't throw error to avoid breaking the main flow
+  }
+};
+
 router.post('/', authenticateToken, async (req, res) => {
   try {
     const { question, provider, modelName } = req.body;
@@ -47,6 +81,11 @@ router.post('/', authenticateToken, async (req, res) => {
     const user = await User.findById(req.user.userId);
     user.addCalculation(calculation._id);
     await user.save();
+
+    // Cleanup old calculations to maintain 1000 limit (run in background)
+    cleanupOldCalculations().catch(error => {
+      console.error('Background cleanup failed:', error);
+    });
 
     res.json({
       success: true,

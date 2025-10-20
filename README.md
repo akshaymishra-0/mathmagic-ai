@@ -45,9 +45,10 @@
 - **Progressive Difficulty**: Builds understanding from fundamentals to advanced concepts
 - **Student-Friendly**: Designed for students from middle school to university level
 
-### 📊 **Smart Graph Visualization**
-- **Conditional Display**: Graphs appear only when explicitly requested in questions
-- **Multiple Chart Types**: Line graphs, parabolas, circles, scatter plots, functions
+### 📊 **Smart Database Management**
+- **Automatic Cleanup**: Maintains 1000 recent calculations to save storage
+- **Free Tier Friendly**: Optimized for MongoDB Atlas free clusters (512MB limit)
+- **Background Processing**: Cleanup runs automatically without affecting performance
 - **High Precision**: 20-50 data points for mathematical accuracy
 - **Interactive Controls**: Zoom, pan, and detailed coordinate display
 - **Responsive Charts**: Optimized for both desktop and mobile viewing

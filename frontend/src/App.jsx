@@ -382,8 +382,8 @@ const ProtectedSolver = () => {
   }
 
   const apiConfig = {
-    provider: 'openrouter',
-    modelName: 'nvidia/nemotron-nano-9b-v2:free'
+    provider: 'openrouter'
+    // modelName will be determined by backend environment variable
   };
 
   return (

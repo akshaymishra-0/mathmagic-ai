@@ -69,6 +69,14 @@
 mongodb+srv://mathmagic_user:YOUR_PASSWORD@cluster0.xxxxx.mongodb.net/mathmagic_prod?retryWrites=true&w=majority
 ```
 
+### Automatic Database Cleanup
+The application includes **automatic cleanup** to manage storage on free MongoDB Atlas clusters:
+- **Maintains 1000 most recent calculations** globally
+- **Automatically deletes older entries** when limit is exceeded
+- **Cleans up user references** to maintain data integrity
+- **Runs in background** to avoid impacting performance
+- **Helps stay within 512MB free tier limits**
+
 ---
 
 ## 🔑 API Key Setup
