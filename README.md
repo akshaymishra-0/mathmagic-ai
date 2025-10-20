@@ -1,85 +1,128 @@
-# 🎓 AI-Powered Mathematics Solver
+# 🎓 MathMagic - AI-Powered Mathematics Solver
 
-A modern, intelligent web application that provides comprehensive step-by-step solutions to mathematics problems across all branches, powered by advanced AI technology.
+<div align="center">
+  <img src="https://via.placeholder.com/800x400/1a1a24/9333ea?text=MathMagic+AI+Solver" alt="MathMagic Demo" width="800" height="400">
 
-![Math Solver Demo](https://via.placeholder.com/800x400/1a1a24/646cff?text=AI+Math+Solver+Demo)
+  **An intelligent, modern web application that provides comprehensive step-by-step solutions to mathematics problems across all branches, powered by advanced AI technology with a stunning animated interface.**
+
+  ![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=flat-square&logo=react)
+  ![Node.js](https://img.shields.io/badge/Node.js-18+-339933?style=flat-square&logo=node.js)
+  ![MongoDB](https://img.shields.io/badge/MongoDB-8.19.1-47A248?style=flat-square&logo=mongodb)
+  ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.3.6-38B2AC?style=flat-square&logo=tailwind-css)
+  ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+
+  [🚀 Live Demo](#) • [📖 Documentation](#) • [🛠️ Installation](#installation)
+</div>
 
 ## ✨ Key Features
 
-### 🧮 Comprehensive Math Coverage
-- **Algebra**: Equations, inequalities, polynomials, matrices
-- **Calculus**: Derivatives, integrals, limits, series
-- **Geometry**: Shapes, areas, volumes, coordinate geometry
-- **Trigonometry**: Identities, functions, triangles
-- **Statistics & Probability**: Distributions, hypothesis testing
-- **Arithmetic**: All basic operations and concepts
+### 🧮 **Comprehensive Math Coverage**
+- **Algebra**: Equations, inequalities, polynomials, matrices, quadratic formulas
+- **Calculus**: Derivatives, integrals, limits, series, differential equations
+- **Geometry**: Shapes, areas, volumes, coordinate geometry, theorems
+- **Trigonometry**: Identities, functions, triangles, trigonometric equations
+- **Statistics & Probability**: Distributions, hypothesis testing, permutations
+- **Arithmetic**: All basic operations, fractions, decimals, percentages
 
-### 📚 Educational Excellence
-- **Detailed Step-by-Step Solutions**: From basic concepts to final answers
-- **Interactive Learning**: Collapsible steps for better understanding
-- **Formula Explanations**: Every formula used is explained
-- **Progressive Difficulty**: Builds understanding from fundamentals
-- **Student-Friendly**: Assumes 10-year-old level knowledge
+### 🎨 **Modern Animated Interface**
+- **Dark Glassmorphism Theme**: Beautiful, eye-friendly dark interface with glass effects
+- **Animated Background**: Floating geometric shapes (circle, square, rectangle, trapezium) with glowing effects
+- **Mathematical Symbols**: Animated plus, division, pi, sigma, integral, square root, and multiplication symbols
+- **Responsive Animations**: Smooth floating, pulsing, and rotation animations
+- **Interactive Elements**: Hover effects, smooth transitions, and loading states
 
-### 🎨 Modern User Experience
-- **Dark Theme**: Beautiful, eye-friendly interface
-- **Responsive Design**: Works on desktop, tablet, and mobile
-- **Real-time Feedback**: Loading states and success notifications
-- **Interactive Elements**: Hover effects and smooth animations
-- **Accessibility**: Proper contrast and keyboard navigation
+### 🔐 **User Authentication System**
+- **Secure Registration**: User signup with email and password validation
+- **JWT Authentication**: Secure login with JSON Web Tokens
+- **Protected Routes**: Math solver accessible only to authenticated users
+- **Session Management**: Automatic logout and session handling
+- **User Dashboard**: Personalized experience with calculation history
 
-### 📊 Smart Graph Visualization
-- **Conditional Display**: Graphs only when explicitly requested
-- **Multiple Chart Types**: Line graphs, parabolas, circles, scatter plots
-- **High Precision**: 20-50 data points for accuracy
-- **Interactive Controls**: Zoom, pan, and detailed coordinates
+### 📚 **Educational Excellence**
+- **Detailed Step-by-Step Solutions**: From basic concepts to final answers with explanations
+- **Interactive Learning**: Collapsible accordion steps for better understanding
+- **Formula Explanations**: Every mathematical formula used is clearly explained
+- **Progressive Difficulty**: Builds understanding from fundamentals to advanced concepts
+- **Student-Friendly**: Designed for students from middle school to university level
 
-### 🔧 Advanced Features
-- **Clear All Function**: Reset interface with one click
-- **Example Library**: Pre-built math problems for testing
-- **Error Handling**: Comprehensive error messages and recovery
-- **Rate Limiting**: Built-in protection against abuse
-- **Security**: Helmet.js integration and input validation
+### 📊 **Smart Graph Visualization**
+- **Conditional Display**: Graphs appear only when explicitly requested in questions
+- **Multiple Chart Types**: Line graphs, parabolas, circles, scatter plots, functions
+- **High Precision**: 20-50 data points for mathematical accuracy
+- **Interactive Controls**: Zoom, pan, and detailed coordinate display
+- **Responsive Charts**: Optimized for both desktop and mobile viewing
+
+### � **Calculation History**
+- **Persistent Storage**: All solved problems saved to MongoDB database
+- **Organized Display**: Chronological history with question numbers
+- **Quick Recalculation**: One-click to solve the same problem again
+- **Responsive Layout**: Optimized display for mobile and desktop
+- **Date Tracking**: Timestamp for each calculation with formatted dates
+
+### 🛡️ **Advanced Security & Performance**
+- **Rate Limiting**: Built-in protection against API abuse (100 requests/15min)
+- **Helmet.js Integration**: Security headers and XSS protection
+- **Input Validation**: Comprehensive validation and sanitization
+- **CORS Configuration**: Secure cross-origin resource sharing
+- **Environment Security**: Sensitive data stored server-side only
 
 ## 🛠️ Technology Stack
 
-### Frontend Architecture
-- **React 18**: Modern component-based UI framework
-- **Vite**: Lightning-fast build tool and dev server
-- **Tailwind CSS**: Utility-first CSS framework
-- **Recharts**: Declarative charting library for graphs
-- **Lucide React**: Beautiful, consistent icon system
-- **Axios**: HTTP client for API communication
-- **React Hot Toast**: Elegant notification system
+### 🎨 **Frontend**
+- **React 18.3.1**: Modern React with hooks and concurrent features
+- **Vite 5.4.8**: Lightning-fast build tool and development server
+- **Tailwind CSS 3.4.14**: Utility-first CSS framework with custom dark theme
+- **React Router DOM 6.28.0**: Client-side routing for single-page application
+- **Axios 1.7.7**: HTTP client for API communication
+- **Recharts 2.13.0**: Composable charting library for data visualization
+- **Lucide React 0.451.0**: Beautiful & consistent icon library
+- **React Hot Toast 2.4.1**: Toast notifications for user feedback
 
-### Backend Infrastructure
-- **Node.js**: Runtime environment
-- **Express.js**: Web application framework
-- **OpenRouter AI**: Primary AI provider integration
-- **CORS**: Cross-origin resource sharing
-- **Helmet.js**: Security middleware
-- **Express Rate Limit**: API rate limiting
-- **Environment Configuration**: Secure credential management
+### ⚙️ **Backend**
+- **Node.js 20.x**: JavaScript runtime for server-side development
+- **Express.js 4.21.1**: Fast, unopinionated web framework
+- **MongoDB 8.7.0**: NoSQL database for flexible data storage
+- **Mongoose 8.8.0**: Elegant MongoDB object modeling for Node.js
+- **JWT (jsonwebtoken 9.0.2)**: Secure token-based authentication
+- **bcryptjs 2.4.3**: Password hashing for security
+- **Helmet.js 8.0.0**: Security middleware for Express applications
+- **CORS 2.8.5**: Cross-origin resource sharing configuration
 
-### Development Tools
-- **ESLint**: Code linting and quality
-- **Nodemon**: Auto-restart for development
-- **Concurrently**: Run multiple processes
-- **Cross-env**: Cross-platform environment variables
+### 🤖 **AI & External Services**
+- **OpenRouter API**: Advanced AI models for mathematical problem solving
+- **Multiple AI Models**: Access to GPT-4, Claude, Gemini, and other models
+- **Intelligent Routing**: Automatic model selection based on problem complexity
+
+### 🛡️ **Security & Performance**
+- **Helmet.js**: Security headers and XSS protection
+- **Rate Limiting**: API abuse prevention (100 requests per 15 minutes)
+- **Input Validation**: Comprehensive data sanitization
+- **JWT Authentication**: Secure stateless authentication
+- **Password Hashing**: bcryptjs for secure password storage
+- **CORS Configuration**: Secure cross-origin policies
+
+### 📦 **Development Tools**
+- **ESLint**: Code linting and style enforcement
+- **PostCSS**: CSS processing and optimization
+- **Autoprefixer**: CSS vendor prefixing for cross-browser compatibility
+- **Vite Dev Server**: Fast hot module replacement during development
+- **npm**: Package management and script running
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Node.js** 18.0.0 or higher
-- **npm** 9.0.0 or higher (comes with Node.js)
+- **Node.js** 20.x or higher
+- **npm** 10.x or higher (comes with Node.js)
+- **MongoDB** (local installation or MongoDB Atlas account)
 - **OpenRouter API Key** (get from [openrouter.ai](https://openrouter.ai))
+- **Git** for cloning the repository
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/math-solver-ai.git
-   cd math-solver-ai
+   git clone https://github.com/yourusername/mathmagic.git
+   cd mathmagic
    ```
 
 2. **Install all dependencies**
@@ -88,20 +131,44 @@ A modern, intelligent web application that provides comprehensive step-by-step s
    ```
    This command will install dependencies for root, backend, and frontend.
 
-3. **Environment Setup**
+3. **Database Setup**
+   - **Option A: MongoDB Atlas (Recommended)**
+     - Create account at [MongoDB Atlas](https://www.mongodb.com/atlas)
+     - Create a new cluster (free tier available)
+     - Create database user with read/write permissions
+     - Get connection string
+
+   - **Option B: Local MongoDB**
+     ```bash
+     # Install MongoDB locally
+     # Ubuntu/Debian:
+     sudo apt-get install mongodb
+
+     # macOS with Homebrew:
+     brew install mongodb-community
+
+     # Windows: Download from mongodb.com
+     ```
+
+4. **Environment Setup**
    ```bash
    cd backend
    cp .env.example .env
    ```
 
-   Edit `.env` file:
+   Edit `.env` file with your configuration:
    ```env
-   PORT=5000
-   OPENROUTER_API_KEY=your_openrouter_api_key_here
    NODE_ENV=development
+   PORT=5000
+   MONGODB_URI=mongodb://localhost:27017/mathmagic_dev
+   # OR for MongoDB Atlas:
+   # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/mathmagic_dev
+   JWT_SECRET=your_super_secure_jwt_secret_here
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   FRONTEND_URL=http://localhost:5173
    ```
 
-4. **Start Development Servers**
+5. **Start Development Servers**
    ```bash
    # From project root
    npm run dev
@@ -109,67 +176,137 @@ A modern, intelligent web application that provides comprehensive step-by-step s
 
    This starts both backend (port 5000) and frontend (port 5173) simultaneously.
 
-5. **Open in Browser**
+6. **Open in Browser**
    ```
    http://localhost:5173
    ```
 
+   **First Time Setup**: Create an account through the signup page to access the math solver.
+
 ## 📖 Usage Guide
+
+### Getting Started
+
+1. **Create Account**: Click "Sign Up" to create a new account with email and password
+2. **Login**: Use your credentials to log into the application
+3. **Access Solver**: Once authenticated, you can access the math solver
 
 ### Solving Math Problems
 
 1. **Enter Your Question**: Type any math problem in the text area
 2. **Submit**: Click "Solve Problem" or press Enter
-3. **View Solution**: Expand steps to see detailed explanations
-4. **Clear**: Use "Clear All" to reset the interface
+3. **View Solution**: Expand steps to see detailed explanations with formulas
+4. **View Graphs**: If applicable, graphs will appear automatically
+5. **Clear**: Use "Clear All" to reset the interface
+
+### Calculation History
+
+- **View History**: All solved problems are automatically saved and displayed
+- **Re-solve Problems**: Click on any previous question to solve it again
+- **Organized Display**: Problems are numbered and timestamped
+- **Persistent Storage**: History is saved to your account across sessions
 
 ### Example Problems
-The app includes pre-built examples:
-- Quadratic equations: `x² - 5x + 6 = 0`
-- Derivatives: `d/dx(3x³ - 2x² + 5x - 1)`
-- Integrals: `∫(4x³ + 2x)dx`
-- Graphing: `y = 2x + 3` (when requesting graphs)
+The app can solve problems across all mathematical branches:
+
+**Algebra**: `Solve x² - 5x + 6 = 0` → `x = 2 or x = 3`
+
+**Calculus**: `Find d/dx(3x³ - 2x² + 5x - 1)` → `9x² - 4x + 5`
+
+**Geometry**: `Find area of circle with radius 5` → `Area = 25π`
+
+**Trigonometry**: `Solve sin(x) = 0.5 for x ∈ [0, 2π]` → `x = π/6 or x = 5π/6`
 
 ### Graph Visualization
 To see graphs, include keywords like:
 - "graph", "plot", "draw", "show the curve"
 - "points", "coordinates"
 
-Example: `"Graph the function y = sin(x)"`
+Example: `"Graph the function y = sin(x) from x = 0 to x = 2π"`
+
+### Animated Interface Features
+
+- **Floating Shapes**: Enjoy the animated geometric shapes in the background
+- **Glowing Effects**: Mathematical symbols with smooth animations
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Dark Theme**: Eye-friendly interface with glassmorphism effects
 
 ## 🔒 Security
 
-See [SECURITY.md](SECURITY.md) for detailed security information, best practices, and reporting guidelines.
+### Authentication & Authorization
+- **JWT Authentication**: Secure token-based authentication with expiration
+- **Password Hashing**: bcryptjs with salt rounds for secure password storage
+- **Protected Routes**: All math solving endpoints require authentication
+- **Session Management**: Automatic logout and token refresh handling
+
+### API Security
+- **Rate Limiting**: 100 requests per 15 minutes per IP address
+- **Helmet.js**: Security headers including XSS protection, CSRF prevention
+- **CORS Configuration**: Restricted cross-origin resource sharing
+- **Input Validation**: Comprehensive sanitization and validation
+- **Error Handling**: Secure error responses without sensitive data leakage
+
+### Data Protection
+- **Server-side API Keys**: OpenRouter keys stored securely on backend only
+- **Environment Variables**: Sensitive configuration never exposed to frontend
+- **MongoDB Security**: Authentication required, connection encryption
+- **No Plain Text Storage**: All sensitive data properly encrypted/hashed
+
+### Security Best Practices
+- **HTTPS Only**: All production deployments use SSL/TLS encryption
+- **Regular Updates**: Dependencies kept up-to-date with security patches
+- **Audit Logging**: User actions and API usage tracked
+- **Secure Headers**: Comprehensive security headers configuration
+
+### Reporting Security Issues
+If you discover a security vulnerability, please email security@mathmagic.com instead of creating a public issue.
+
+See [SECURITY.md](SECURITY.md) for detailed security information and best practices.
+
+## 🏗️ Project Structure
 
 ## 🏗️ Project Structure
 
 ```
-math-solver-ai/
-├── backend/                    # Express.js API server
+mathmagic/
+├── backend/                          # Express.js API server
 │   ├── config/
-│   │   └── aiProviders.js     # AI provider configurations
+│   │   └── aiProviders.js           # AI provider configurations
+│   ├── models/
+│   │   ├── User.js                  # User data model (MongoDB)
+│   │   └── Calculation.js           # Calculation history model
 │   ├── routes/
-│   │   └── solve.js          # Math solving endpoint
+│   │   ├── auth.js                  # Authentication endpoints
+│   │   └── solve.js                 # Math solving endpoint
 │   ├── services/
-│   │   └── aiService.js      # AI integration logic
-│   ├── server.js             # Main server file
+│   │   └── aiService.js             # AI integration logic
+│   ├── server.js                    # Main server file
 │   ├── package.json
-│   └── .env                  # Environment variables
-├── frontend/                  # React application
-│   ├── public/               # Static assets
+│   └── .env                         # Environment variables
+├── frontend/                         # React application
+│   ├── public/                      # Static assets
 │   ├── src/
-│   │   ├── components/       # React components
-│   │   │   ├── MathSolver.jsx    # Main solver component
-│   │   │   ├── StepAccordion.jsx # Step display component
-│   │   │   └── GraphVisualizer.jsx # Chart component
-│   │   ├── App.jsx           # Main app component
-│   │   ├── main.jsx          # React entry point
-│   │   ├── index.css         # Global styles
-│   │   └── App.css           # Component styles
+│   │   ├── components/
+│   │   │   ├── auth/
+│   │   │   │   ├── Login.jsx        # User login component
+│   │   │   │   └── Signup.jsx       # User registration component
+│   │   │   ├── ConfirmationModal.jsx # Confirmation dialogs
+│   │   │   ├── GraphVisualizer.jsx  # Chart component
+│   │   │   ├── MathSolver.jsx       # Main solver component
+│   │   │   └── StepAccordion.jsx    # Step display component
+│   │   ├── contexts/
+│   │   │   └── AuthContext.jsx      # Authentication context
+│   │   ├── App.jsx                  # Main app component
+│   │   ├── App.css                  # Component styles
+│   │   ├── index.css                # Global styles with animations
+│   │   └── main.jsx                 # React entry point
+│   ├── eslint.config.js             # ESLint configuration
 │   ├── package.json
-│   └── vite.config.js        # Vite configuration
-├── package.json              # Root package.json
-└── README.md                 # This file
+│   ├── postcss.config.js            # PostCSS configuration
+│   ├── tailwind.config.js           # Tailwind CSS configuration
+│   └── vite.config.js               # Vite configuration
+├── package.json                     # Root package.json with scripts
+└── README.md                        # This file
 ```
 
 ## 🔧 Configuration
@@ -193,8 +330,64 @@ RATE_LIMIT_MAX_REQUESTS=100
 
 ## 📊 API Documentation
 
-### Solve Math Problem
+### Authentication Endpoints
+
+#### User Registration
+**Endpoint**: `POST /api/auth/signup`
+
+**Request Body**:
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "message": "User registered successfully",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com"
+  }
+}
+```
+
+#### User Login
+**Endpoint**: `POST /api/auth/login`
+
+**Request Body**:
+```json
+{
+  "email": "user@example.com",
+  "password": "securepassword123"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "token": "jwt_token_here",
+  "user": {
+    "id": "user_id",
+    "email": "user@example.com"
+  }
+}
+```
+
+### Math Solving Endpoint
+
+#### Solve Math Problem
 **Endpoint**: `POST /api/solve`
+
+**Headers**:
+```
+Authorization: Bearer jwt_token_here
+```
 
 **Request Body**:
 ```json
@@ -225,36 +418,182 @@ RATE_LIMIT_MAX_REQUESTS=100
 }
 ```
 
+### Rate Limiting
+- **100 requests per 15 minutes** per IP address
+- Applied to all API endpoints
+- Returns `429 Too Many Requests` when exceeded
+
 ## 🧪 Testing
 
-### Health Check
+### Automated Testing
 ```bash
 npm run test
 ```
 Tests backend connectivity on `http://localhost:5000/health`
 
-### Manual Testing
-1. Start the application: `npm run dev`
-2. Test various math problems
-3. Verify graph generation with plotting requests
-4. Test clear functionality
+### Manual Testing Checklist
+
+#### Authentication Testing
+1. **User Registration**:
+   - Test signup with valid email/password
+   - Test validation errors (weak password, invalid email)
+   - Verify duplicate email prevention
+
+2. **User Login**:
+   - Test login with correct credentials
+   - Test login with incorrect credentials
+   - Test JWT token generation and validation
+
+3. **Protected Routes**:
+   - Verify math solver requires authentication
+   - Test token expiration handling
+   - Test logout functionality
+
+#### Math Solver Testing
+1. **Basic Functionality**:
+   - Test various math problems (algebra, calculus, geometry)
+   - Verify step-by-step solutions
+   - Test graph generation when requested
+
+2. **Calculation History**:
+   - Verify problems are saved after solving
+   - Test history display and formatting
+   - Test re-solving previous problems
+
+3. **UI/UX Testing**:
+   - Test responsive design on different screen sizes
+   - Verify animated background elements
+   - Test dark theme and glassmorphism effects
+   - Test loading states and error handling
+
+#### API Testing
+1. **Rate Limiting**:
+   - Test 100+ requests within 15 minutes
+   - Verify 429 status code response
+
+2. **Security Headers**:
+   - Check Helmet.js security headers
+   - Verify CORS configuration
+   - Test input validation and sanitization
+
+### Performance Testing
+- Test concurrent user sessions
+- Verify MongoDB connection pooling
+- Check memory usage during heavy load
+- Test API response times
 
 ## 🚀 Deployment
 
+### Prerequisites for Production
+- **MongoDB Database**: Set up MongoDB Atlas or local MongoDB instance
+- **Node.js**: Version 20.x or higher on production server
+- **SSL Certificate**: For HTTPS in production
+- **Domain Name**: Pointed to your server IP
+- **Reverse Proxy**: Nginx or Apache for serving static files and proxying API requests
+
 ### Production Build
 ```bash
-# Build frontend
+# Install all dependencies
+npm run setup
+
+# Build frontend for production
 npm run build
 
 # Start production servers
 npm run start
 ```
 
-### Environment Setup for Production
-- Set `NODE_ENV=production`
-- Configure production API keys
-- Set up reverse proxy (nginx recommended)
-- Enable HTTPS
+### Environment Configuration for Production
+Create `.env` file in backend directory with production values:
+
+```env
+NODE_ENV=production
+PORT=5000
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/mathmagic_prod
+JWT_SECRET=your_super_secure_jwt_secret_here
+OPENROUTER_API_KEY=your_production_openrouter_api_key
+FRONTEND_URL=https://yourdomain.com
+```
+
+### Database Setup
+1. **MongoDB Atlas** (Recommended):
+   - Create a new cluster
+   - Set up database user with read/write permissions
+   - Whitelist your server IP
+   - Get connection string
+
+2. **Local MongoDB**:
+   - Install MongoDB on your server
+   - Create database: `mathmagic_prod`
+   - Configure authentication
+
+### Server Setup (Ubuntu/Debian)
+```bash
+# Install Node.js
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Install PM2 for process management
+sudo npm install -g pm2
+
+# Clone and setup
+git clone https://github.com/yourusername/mathmagic.git
+cd mathmagic
+npm run setup
+npm run build
+
+# Start with PM2
+pm2 start ecosystem.config.js --env production
+pm2 startup
+pm2 save
+```
+
+### Nginx Configuration
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    # Redirect HTTP to HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name yourdomain.com;
+
+    # SSL configuration
+    ssl_certificate /path/to/ssl/cert.pem;
+    ssl_certificate_key /path/to/ssl/private.key;
+
+    # Serve static files
+    location / {
+        root /path/to/mathmagic/frontend/dist;
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Proxy API requests
+    location /api {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+### Security Considerations
+- **Environment Variables**: Never commit `.env` files
+- **API Keys**: Rotate regularly and use restricted keys
+- **Firewall**: Configure UFW/firewall rules
+- **Updates**: Keep dependencies updated
+- **Monitoring**: Set up logging and monitoring
+- **Backups**: Regular database backups
 
 ## 🤝 Contributing
 
@@ -276,61 +615,73 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- **OpenRouter** for AI model access
-- **React & Vite** communities
-- **Tailwind CSS** for styling
-- **Lucide** for icons
-- **Recharts** for visualization
+- **OpenRouter** for providing access to advanced AI models
+- **React & Vite** communities for excellent development tools
+- **Tailwind CSS** for the beautiful utility-first styling framework
+- **MongoDB** for reliable NoSQL database solutions
+- **JWT.io** for secure token-based authentication
+- **Lucide React** for consistent and beautiful icons
+- **Recharts** for powerful data visualization components
+- **Express.js** for robust backend framework
+- **Mongoose** for elegant MongoDB object modeling
 
 ## 📞 Support
 
-For questions or issues:
-- Open an issue on GitHub
-- Check the troubleshooting section below
+For questions, issues, or contributions:
+- 📧 **Email**: akshay@example.com
+- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/mathmagic/issues)
+- 📖 **Documentation**: Check this README and inline code comments
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/mathmagic/discussions)
 
-## � Security
-
-### Environment Variables
-- **Never commit** `.env` files to version control
-- Use `.env.example` as a template for required variables
-- API keys are stored server-side only
-
-### Security Features
-- **Helmet.js**: Security headers and XSS protection
-- **Rate Limiting**: 100 requests per 15 minutes per IP
-- **CORS**: Configured for allowed origins only
-- **Input Validation**: Request size limits (10MB)
-- **No API Keys in Frontend**: All sensitive data handled server-side
-
-### Best Practices
-- Keep dependencies updated
-- Use HTTPS in production
-- Monitor rate limits and error logs
-- Regular security audits recommended
-
-## �🔍 Troubleshooting
+## 🔍 Troubleshooting
 
 ### Common Issues
 
-**Frontend won't start**
+**Application won't start**
 ```bash
-# Clear node_modules and reinstall
+# Clear all caches and reinstall
 npm run clean && npm run setup
+
+# Check MongoDB connection
+cd backend && node -e "require('mongoose').connect(process.env.MONGODB_URI).then(() => console.log('MongoDB connected')).catch(console.error)"
 ```
 
+**Authentication problems**
+- Verify JWT_SECRET is set in `.env`
+- Check MongoDB connection for user storage
+- Clear browser localStorage and try again
+
 **API Key Issues**
-- Verify your OpenRouter API key
+- Verify your OpenRouter API key is valid
 - Check `.env` file configuration
-- Ensure key has sufficient credits
+- Ensure key has sufficient credits/quota
 
 **Graph not displaying**
-- Include graphing keywords in your question
-- Check browser console for errors
+- Include graphing keywords: "graph", "plot", "draw", "show"
+- Check browser console for JavaScript errors
+- Verify Recharts library is loading properly
 
-**Slow responses**
-- Free models have rate limits
-- Consider upgrading to paid models
+**Slow responses or rate limiting**
+- Free models have rate limits (100 requests/15min)
+- Consider upgrading to paid OpenRouter models
+- Check network connectivity
+
+**Database connection errors**
+- Verify MONGODB_URI format
+- For MongoDB Atlas: whitelist your IP
+- For local MongoDB: ensure service is running
 
 ---
 
-**Made with ❤️ by Akshay Mishra for students and educators worldwide**
+<div align="center">
+
+**Made with ❤️ by [Akshay Mishra](https://github.com/yourusername)**
+
+*Empowering students and educators worldwide with AI-powered mathematics*
+
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat&logo=react)](https://reactjs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat&logo=node.js)](https://nodejs.org/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-8.7.0-47A248?style=flat&logo=mongodb)](https://mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.14-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
+
+</div>

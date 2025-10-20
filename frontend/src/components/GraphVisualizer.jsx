@@ -54,8 +54,8 @@ const GraphVisualizer = ({ graphData }) => {
   };
 
   return (
-    <div className="glass-effect rounded-2xl p-6 shadow-2xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="glass-effect rounded-2xl p-3 md:p-6 shadow-2xl">
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <div>
           <div className="flex items-center space-x-2 mb-2">
             <TrendingUp className="w-5 h-5 text-accent-orange" />
@@ -72,10 +72,10 @@ const GraphVisualizer = ({ graphData }) => {
         </div>
       </div>
 
-      <div className="bg-dark-card rounded-xl p-6 border border-dark-border">
-        <ResponsiveContainer width="100%" height={400}>
+      <div className="bg-dark-card rounded-xl p-3 md:p-6 border border-dark-border">
+        <ResponsiveContainer width="100%" height={450}>
           {type === 'scatter' ? (
-            <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <ScatterChart margin={{ top: 10, right: 15, left: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2a2a35" />
               <XAxis 
                 type="number" 
@@ -106,7 +106,7 @@ const GraphVisualizer = ({ graphData }) => {
               />
             </ScatterChart>
           ) : (
-            <LineChart data={sortedPoints} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
+            <LineChart data={sortedPoints} margin={{ top: 10, right: 15, left: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2a2a35" />
               <XAxis 
                 dataKey="x" 

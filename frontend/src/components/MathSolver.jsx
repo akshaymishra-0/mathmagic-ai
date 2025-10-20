@@ -87,7 +87,7 @@ const MathSolver = ({ apiConfig }) => {
   return (
     <div className="space-y-6 mb-8">
       {/* Input Section */}
-      <div className="glass-effect rounded-2xl p-6 shadow-2xl">
+      <div className="glass-effect rounded-2xl p-4 md:p-6 shadow-2xl">
         <div className="flex items-center space-x-2 mb-4">
           <BookOpen className="w-5 h-5 text-accent-purple" />
           <h2 className="text-xl font-semibold">Ask Your Question</h2>
@@ -108,7 +108,7 @@ const MathSolver = ({ apiConfig }) => {
           <button
             type="submit"
             disabled={loading || !question.trim()}
-            className="btn-primary w-full py-3 rounded-xl flex items-center justify-center space-x-2"
+            className="btn-primary w-full py-2 md:py-3 rounded-xl flex items-center justify-center space-x-2"
           >
             {loading ? (
               <>
@@ -127,7 +127,7 @@ const MathSolver = ({ apiConfig }) => {
             type="button"
             onClick={clearAll}
             disabled={loading || (!question.trim() && !solution)}
-            className="btn-secondary w-full py-3 rounded-xl flex items-center justify-center space-x-2 mt-3"
+            className="btn-secondary w-full py-2 md:py-3 rounded-xl flex items-center justify-center space-x-2 mt-3"
           >
             <RotateCcw className="w-5 h-5" />
             <span>Clear All</span>
@@ -157,7 +157,7 @@ const MathSolver = ({ apiConfig }) => {
 
       {/* Loading State */}
       {loading && (
-        <div className="glass-effect rounded-2xl p-12 text-center">
+        <div className="glass-effect rounded-2xl p-8 md:p-12 text-center">
           <div className="inline-block p-4 bg-accent-purple/20 rounded-full mb-4">
             <Loader2 className="w-12 h-12 text-accent-purple animate-spin" />
           </div>
@@ -168,9 +168,9 @@ const MathSolver = ({ apiConfig }) => {
 
       {/* Solution Display */}
       {solution && !loading && (
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* Topic Badge and Final Answer */}
-          <div className="glass-effect rounded-2xl p-6 shadow-2xl">
+          <div className="glass-effect rounded-2xl p-4 md:p-6 shadow-2xl">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <TrendingUp className="w-5 h-5 text-accent-green" />
@@ -183,9 +183,9 @@ const MathSolver = ({ apiConfig }) => {
               )}
             </div>
 
-            <div className="bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-accent-green/30 rounded-xl p-6">
+            <div className="bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-accent-green/30 rounded-xl p-4 md:p-6">
               <p className="text-sm text-gray-400 mb-2">Final Answer:</p>
-              <p className="text-2xl font-bold text-accent-green">{solution.finalAnswer}</p>
+              <p className="text-lg md:text-2xl font-bold text-accent-green">{solution.finalAnswer}</p>
             </div>
           </div>
 
@@ -203,7 +203,7 @@ const MathSolver = ({ apiConfig }) => {
 
       {/* Empty State */}
       {!solution && !loading && (
-        <div className="glass-effect rounded-2xl p-12 text-center">
+        <div className="glass-effect rounded-2xl p-8 md:p-12 text-center">
           <div className="inline-block p-4 bg-accent-purple/20 rounded-full mb-4">
             <Calculator className="w-12 h-12 text-accent-purple" />
           </div>
