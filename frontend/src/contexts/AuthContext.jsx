@@ -18,8 +18,22 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     // Check if user is logged in on app start
     const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      // If we have stored user data, use it immediately for faster loading
+      if (storedUser) {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error('Failed to parse stored user data:', error);
+          localStorage.removeItem('user');
+        }
+      }
+
+      // Always fetch fresh user data from server
       fetchUserProfile();
     } else {
       setLoading(false);
@@ -29,10 +43,13 @@ export const AuthProvider = ({ children }) => {
   const fetchUserProfile = async () => {
     try {
       const response = await axios.get('/api/auth/profile');
-      setUser(response.data.data.user);
+      const userData = response.data.data.user;
+      localStorage.setItem('user', JSON.stringify(userData));
+      setUser(userData);
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       delete axios.defaults.headers.common['Authorization'];
     } finally {
       setLoading(false);
@@ -49,6 +66,7 @@ export const AuthProvider = ({ children }) => {
 
       const { user, token } = response.data.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
 
@@ -70,6 +88,7 @@ export const AuthProvider = ({ children }) => {
 
       const { user, token } = response.data.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setUser(user);
 
@@ -84,6 +103,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
   };

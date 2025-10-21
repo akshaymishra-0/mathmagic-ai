@@ -8,10 +8,9 @@ import GraphVisualizer from './GraphVisualizer';
 
 const EXAMPLE_QUESTIONS = [
   "Solve the quadratic equation: x² - 5x + 6 = 0",
-  "Find the derivative of f(x) = 3x³ - 2x² + 5x - 1",
-  "Graph the function y = 2x + 3",
+  "Find the derivative of: f(x) = 3x³ - 2x² + 5x - 1",
+  "Draw the graph of the function: y = 2x + 3",
   "Solve the system: 2x + y = 7 and x - y = 2",
-  "Solve for the x: log₂(x) = 3",
 ];
 
 const MathSolver = ({ apiConfig }) => {
