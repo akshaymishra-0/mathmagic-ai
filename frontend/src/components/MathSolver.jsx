@@ -184,7 +184,7 @@ const MathSolver = ({ apiConfig }) => {
 
             <div className="bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-accent-green/30 rounded-xl p-4 md:p-6">
               <p className="text-sm text-gray-400 mb-2">Final Answer:</p>
-              <p className="text-lg md:text-2xl font-bold text-accent-green">{solution.finalAnswer}</p>
+              <p className="text-lg md:text-2xl font-bold text-accent-green break-words whitespace-pre-line" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>{solution.finalAnswer}</p>
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import MathSolver from './components/MathSolver';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
+import Profile from './components/Profile';
 import ConfirmationModal from './components/ConfirmationModal';
 import axios from 'axios';
 import { Calculator, Github, Sparkles, ArrowRight, BookOpen, Zap, Users, ArrowLeft, LogOut, User, RotateCcw } from 'lucide-react';
@@ -18,6 +19,7 @@ function App() {
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
   const isHomepage = location.pathname === '/';
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -115,10 +117,13 @@ function AppContent() {
               </a>
               {user ? (
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2 text-sm text-gray-300">
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="p-2 rounded-lg bg-dark-hover hover:bg-dark-border transition-colors"
+                    title="Profile"
+                  >
                     <User className="w-4 h-4" />
-                    <span>{user.name}</span>
-                  </div>
+                  </button>
                   <button
                     onClick={() => setShowLogoutModal(true)}
                     className="p-2 rounded-lg bg-dark-hover hover:bg-red-600/20 hover:text-red-400 transition-colors"
@@ -153,6 +158,7 @@ function AppContent() {
           <Route path="/" element={<Homepage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/solve" element={<ProtectedSolver />} />
         </Routes>
       </div>

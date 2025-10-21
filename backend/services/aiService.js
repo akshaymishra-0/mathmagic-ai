@@ -152,10 +152,9 @@ export class AIService {
         throw new Error("Response is not a valid object");
       }
 
-      // Ensure required fields exist
+      // Ensure required fields exist — if not, fallback to treating whole content as the answer
       if (!parsed.finalAnswer && !parsed.topic) {
-        // If it's not our expected format, treat the whole response as the answer
-        return {
+        const fallback = {
           topic: "Mathematics",
           finalAnswer: content,
           steps: [
@@ -168,15 +167,18 @@ export class AIService {
           ],
           graphData: null,
         };
+
+        return this.formatParsed(fallback);
       }
 
-      return parsed;
+      // Normalize & format the parsed response for frontend consumption
+      return this.formatParsed(parsed);
     } catch (error) {
       console.error("Parse Error:", error);
       console.error("Raw content:", content);
 
       // Fallback response
-      return {
+      const fallback = {
         topic: "Mathematics",
         finalAnswer: content,
         steps: [
@@ -189,7 +191,117 @@ export class AIService {
         ],
         graphData: null,
       };
+
+      return this.formatParsed(fallback);
     }
+  }
+
+  // Convert parsed AI JSON into frontend-friendly, human readable fields.
+  // - Ensures strings for explanation/formula/calculation
+  // - Joins arrays into newline-separated strings
+  // - Converts graph point values to numbers when possible
+  formatParsed(parsed) {
+    // Deep clone to avoid mutating original
+    let obj;
+    try {
+      obj = JSON.parse(JSON.stringify(parsed));
+    } catch (e) {
+      obj = Object.assign({}, parsed);
+    }
+
+    const toReadable = (val) => {
+      if (val === null || val === undefined) return '';
+      if (typeof val === 'string') return val;
+      if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+      if (Array.isArray(val)) {
+        // If array of points like {x,y}, format them nicely
+        if (val.length > 0 && typeof val[0] === 'object' && 'x' in val[0] && 'y' in val[0]) {
+          return val.map(p => `x: ${p.x}, y: ${p.y}`).join('\n');
+        }
+
+        // If array of primitives or strings, join with newlines
+        return val.map(item => toReadable(item)).join('\n');
+      }
+      if (typeof val === 'object') {
+        // If object has lines array, join those
+        if (Array.isArray(val.lines)) return val.lines.join('\n');
+
+        // If it's a point-like object
+        if ('x' in val && 'y' in val) return `x: ${val.x}, y: ${val.y}`;
+
+        // Otherwise, convert key: value pairs into lines
+        try {
+          return Object.entries(val).map(([k, v]) => `${k}: ${toReadable(v)}`).join('\n');
+        } catch (e) {
+          return String(val);
+        }
+      }
+
+      return String(val);
+    };
+
+    // Normalize finalAnswer
+    obj.finalAnswer = toReadable(obj.finalAnswer || obj.answer || '');
+
+    // Normalize steps
+    if (Array.isArray(obj.steps)) {
+      obj.steps = obj.steps.map((step, idx) => {
+        const safeStep = (step && typeof step === 'object') ? Object.assign({}, step) : { explanation: step };
+
+        safeStep.title = toReadable(safeStep.title || `Step ${idx + 1}`);
+        safeStep.explanation = toReadable(safeStep.explanation || '');
+        safeStep.formula = toReadable(safeStep.formula || '');
+        safeStep.calculation = toReadable(safeStep.calculation || '');
+
+        return safeStep;
+      });
+    } else {
+      // If steps is a single string/object, coerce into array
+      if (obj.steps) {
+        obj.steps = [{ title: 'Solution', explanation: toReadable(obj.steps), formula: '', calculation: '' }];
+      } else {
+        obj.steps = [];
+      }
+    }
+
+    // Normalize graphData
+    if (obj.graphData) {
+      const gd = Object.assign({}, obj.graphData);
+
+      // Ensure type
+      gd.type = gd.type || 'none';
+
+      // Equation
+      gd.equation = toReadable(gd.equation || '');
+
+      // Points: try to coerce x/y to numbers where possible
+      if (Array.isArray(gd.points)) {
+        gd.points = gd.points.map(p => {
+          if (p && typeof p === 'object') {
+            const nx = (typeof p.x === 'number') ? p.x : (Number(p.x) || 0);
+            const ny = (typeof p.y === 'number') ? p.y : (Number(p.y) || 0);
+            return { x: nx, y: ny };
+          }
+          return p;
+        });
+      } else {
+        gd.points = [];
+      }
+
+      // Domain & range ensure numeric min/max
+      if (gd.domain && typeof gd.domain === 'object') {
+        gd.domain = { min: Number(gd.domain.min) || 0, max: Number(gd.domain.max) || 0 };
+      }
+      if (gd.range && typeof gd.range === 'object') {
+        gd.range = { min: Number(gd.range.min) || 0, max: Number(gd.range.max) || 0 };
+      }
+
+      obj.graphData = gd;
+    } else {
+      obj.graphData = null;
+    }
+
+    return obj;
   }
 }
 
