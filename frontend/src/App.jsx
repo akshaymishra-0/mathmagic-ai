@@ -1,13 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
-import MathSolver from './components/MathSolver';
-import Login from './components/auth/Login';
-import Signup from './components/auth/Signup';
-import Profile from './components/Profile';
-import ConfirmationModal from './components/ConfirmationModal';
-import axios from 'axios';
-import { Calculator, Github, Sparkles, ArrowRight, BookOpen, Zap, Users, ArrowLeft, LogOut, User, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import MathSolver from "./components/MathSolver";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
+import Profile from "./components/Profile";
+import ConfirmationModal from "./components/ConfirmationModal";
+import axios from "axios";
+import {
+  Calculator,
+  Github,
+  Sparkles,
+  ArrowRight,
+  BookOpen,
+  Zap,
+  Users,
+  ArrowLeft,
+  LogOut,
+  User,
+  RotateCcw,
+} from "lucide-react";
 
 function App() {
   return (
@@ -20,7 +32,7 @@ function App() {
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isHomepage = location.pathname === '/';
+  const isHomepage = location.pathname === "/";
   const { user, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
@@ -48,25 +60,39 @@ function AppContent() {
 
         {/* Math Icons */}
         {/* Plus */}
-        <div className="flex items-center justify-center absolute bottom-32 right-16 w-16 h-8 text-2xl font-bold text-yellow-400/60 animate-pulse-slow icon-glow-yellow">+</div>
+        <div className="flex items-center justify-center absolute bottom-32 right-16 w-16 h-8 text-2xl font-bold text-yellow-400/60 animate-pulse-slow icon-glow-yellow">
+          +
+        </div>
 
         {/* Division */}
-        <div className="flex items-center justify-center absolute bottom-32 right-80 w-16 h-16 text-4xl font-bold text-teal-400/70 animate-pulse-slow icon-glow-teal">÷</div>
+        <div className="flex items-center justify-center absolute bottom-32 right-80 w-16 h-16 text-4xl font-bold text-teal-400/70 animate-pulse-slow icon-glow-teal">
+          ÷
+        </div>
 
         {/* Pi */}
-        <div className="flex items-center justify-center absolute top-24 left-1/4 w-10 h-10 text-3xl font-bold text-blue-400/50 animate-bounce-slow icon-glow-blue">π</div>
+        <div className="flex items-center justify-center absolute top-24 left-1/4 w-10 h-10 text-3xl font-bold text-blue-400/50 animate-bounce-slow icon-glow-blue">
+          π
+        </div>
 
         {/* Sigma */}
-        <div className="flex items-center justify-center absolute bottom-16 left-1/2 w-12 h-12 text-4xl font-bold text-green-400/40 animate-pulse-slow icon-glow-green">∑</div>
+        <div className="flex items-center justify-center absolute bottom-16 left-1/2 w-12 h-12 text-4xl font-bold text-green-400/40 animate-pulse-slow icon-glow-green">
+          ∑
+        </div>
 
         {/* Integral */}
-        <div className="flex items-center justify-center absolute top-2/4 right-1/4 w-10 h-10 text-3xl font-bold text-purple-400/50 animate-bounce-slow icon-glow-purple">∫</div>
+        <div className="flex items-center justify-center absolute top-2/4 right-1/4 w-10 h-10 text-3xl font-bold text-purple-400/50 animate-bounce-slow icon-glow-purple">
+          ∫
+        </div>
 
         {/* Square Root */}
-        <div className="flex items-center justify-center absolute top-1/3 right-2/3 w-12 h-12 text-3xl font-bold text-orange-400/45 animate-pulse-slow icon-glow-orange">√</div>
+        <div className="flex items-center justify-center absolute top-1/3 right-2/3 w-12 h-12 text-3xl font-bold text-orange-400/45 animate-pulse-slow icon-glow-orange">
+          √
+        </div>
 
         {/* Multiplication */}
-        <div className="flex items-center justify-center absolute bottom-1/3 left-20 w-8 h-8 text-2xl font-bold text-red-400/60 animate-bounce-slow icon-glow-red">×</div>
+        <div className="flex items-center justify-center absolute bottom-1/3 left-20 w-8 h-8 text-2xl font-bold text-red-400/60 animate-bounce-slow icon-glow-red">
+          ×
+        </div>
 
         {/* Advanced Math Equations - Only show on homepage */}
         {isHomepage && (
@@ -93,20 +119,24 @@ function AppContent() {
       <header className="relative border-b border-dark-border glass-effect">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-1 md:p-2 bg-gradient-to-br from-accent-purple to-accent-blue rounded-xl">
-                <Calculator className="w-5 h-5 md:w-6 md:h-6 text-white" />
+            <div
+              className="flex items-center space-x-3 cursor-pointer"
+              onClick={() => navigate("/")}
+            >
+              <div className="p-2 bg-gradient-to-br from-accent-purple to-accent-blue rounded-xl">
+                <Calculator className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg md:text-xl lg:text-2xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
+                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
                   MathMagic
                 </h1>
                 <p className="text-xs text-gray-400">Powered by AI</p>
               </div>
-            </div>
-
+            </div>{" "}
             <div className="flex items-center space-x-3">
-              <p className="hidden md:inline text-sm font-medium text-gray-400">Visit Me on GitHub</p>
+              <p className="hidden md:inline text-sm font-medium text-gray-400">
+                Visit Me on GitHub
+              </p>
               <a
                 href="https://github.com/akshaymishra-0"
                 target="_blank"
@@ -118,7 +148,7 @@ function AppContent() {
               {user ? (
                 <div className="flex items-center space-x-3">
                   <button
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate("/profile")}
                     className="p-2 rounded-lg bg-dark-hover hover:bg-dark-border transition-colors"
                     title="Profile"
                   >
@@ -205,10 +235,10 @@ const Homepage = () => {
   const fetchHistory = async () => {
     try {
       setHistoryLoading(true);
-      const response = await axios.get('/api/auth/history');
+      const response = await axios.get("/api/auth/history");
       setHistory(response.data.data.calculations || []);
     } catch (error) {
-      console.error('Failed to fetch history:', error);
+      console.error("Failed to fetch history:", error);
     } finally {
       setHistoryLoading(false);
     }
@@ -216,9 +246,9 @@ const Homepage = () => {
 
   const handleGetStarted = () => {
     if (user) {
-      navigate('/solve');
+      navigate("/solve");
     } else {
-      navigate('/login');
+      navigate("/login");
     }
   };
 
@@ -253,7 +283,7 @@ const Homepage = () => {
           onClick={handleGetStarted}
           className="inline-flex items-center px-6 py-3 md:px-8 md:py-4 bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold rounded-xl hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all duration-300 shadow-lg hover:shadow-xl"
         >
-          {user ? 'Continue Solving' : 'Get Started'}
+          {user ? "Continue Solving" : "Get Started"}
           <ArrowRight className="ml-2 w-5 h-5" />
         </button>
       </div>
@@ -285,12 +315,17 @@ const Homepage = () => {
                           </p>
                         </div>
                         <div className="text-sm text-gray-400 md:text-right">
-                          {new Date(calc.createdAt).toLocaleDateString()} at {new Date(calc.createdAt).toLocaleTimeString()}
+                          {new Date(calc.createdAt).toLocaleDateString()} at{" "}
+                          {new Date(calc.createdAt).toLocaleTimeString()}
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
                         <button
-                          onClick={() => navigate('/solve', { state: { question: calc.question } })}
+                          onClick={() =>
+                            navigate("/solve", {
+                              state: { question: calc.question },
+                            })
+                          }
                           className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent-purple/20 text-accent-purple border border-accent-purple/30 hover:bg-accent-purple/30 hover:border-accent-purple/50 transition-all duration-200"
                           title="Recalculate this problem"
                         >
@@ -306,10 +341,14 @@ const Homepage = () => {
               ) : (
                 <div className="text-center py-12">
                   <Calculator className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-300 mb-2">No calculations yet</h3>
-                  <p className="text-gray-400 mb-6">Start solving math problems to see your history here!</p>
+                  <h3 className="text-lg font-medium text-gray-300 mb-2">
+                    No calculations yet
+                  </h3>
+                  <p className="text-gray-400 mb-6">
+                    Start solving math problems to see your history here!
+                  </p>
                   <button
-                    onClick={() => navigate('/solve')}
+                    onClick={() => navigate("/solve")}
                     className="inline-flex items-center px-5 py-2 md:px-6 md:py-3 bg-gradient-to-r from-accent-purple to-accent-blue text-white font-semibold rounded-xl hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all duration-300"
                   >
                     Solve Your First Problem
@@ -333,22 +372,39 @@ const Homepage = () => {
               <div className="p-3 md:p-4 bg-accent-purple/10 rounded-full w-fit mx-auto mb-4 md:mb-6 group-hover:bg-accent-purple/20 transition-colors duration-300">
                 <BookOpen className="w-8 h-8 md:w-12 md:h-12 text-accent-purple" />
               </div>
-              <h3 className="text-lg md:text-xl font-semibold mb-3 text-white group-hover:text-accent-purple transition-colors duration-300">Comprehensive Coverage</h3>
-              <p className="text-gray-400 leading-relaxed">Solve problems across all math branches - algebra, calculus, geometry, statistics, and more with detailed step-by-step explanations.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-3 text-white group-hover:text-accent-purple transition-colors duration-300">
+                Comprehensive Coverage
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Solve problems across all math branches - algebra, calculus,
+                geometry, statistics, and more with detailed step-by-step
+                explanations.
+              </p>
             </div>
             <div className="group text-center p-4 md:p-8 bg-gradient-to-br from-dark-card/50 to-dark-card/30 backdrop-blur-sm rounded-2xl border border-dark-border/50 hover:border-accent-blue/50 hover:shadow-2xl hover:shadow-accent-blue/10 transition-all duration-500 hover:-translate-y-2">
               <div className="p-3 md:p-4 bg-accent-blue/10 rounded-full w-fit mx-auto mb-4 md:mb-6 group-hover:bg-accent-blue/20 transition-colors duration-300">
                 <Zap className="w-8 h-8 md:w-12 md:h-12 text-accent-blue" />
               </div>
-              <h3 className="text-lg md:text-xl font-semibold mb-3 text-white group-hover:text-accent-blue transition-colors duration-300">AI-Powered Solutions</h3>
-              <p className="text-gray-400 leading-relaxed">Leveraging advanced AI models to provide accurate, instant solutions with interactive visualizations and graphs.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-3 text-white group-hover:text-accent-blue transition-colors duration-300">
+                AI-Powered Solutions
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Leveraging advanced AI models to provide accurate, instant
+                solutions with interactive visualizations and graphs.
+              </p>
             </div>
             <div className="group text-center p-4 md:p-8 bg-gradient-to-br from-dark-card/50 to-dark-card/30 backdrop-blur-sm rounded-2xl border border-dark-border/50 hover:border-accent-green/50 hover:shadow-2xl hover:shadow-accent-green/10 transition-all duration-500 hover:-translate-y-2">
               <div className="p-3 md:p-4 bg-accent-green/10 rounded-full w-fit mx-auto mb-4 md:mb-6 group-hover:bg-accent-green/20 transition-colors duration-300">
                 <Users className="w-8 h-8 md:w-12 md:h-12 text-accent-green" />
               </div>
-              <h3 className="text-lg md:text-xl font-semibold mb-3 text-white group-hover:text-accent-green transition-colors duration-300">For Students & Learners</h3>
-              <p className="text-gray-400 leading-relaxed">Designed specifically for students, educators, and anyone looking to master mathematics with an intuitive, modern interface.</p>
+              <h3 className="text-lg md:text-xl font-semibold mb-3 text-white group-hover:text-accent-green transition-colors duration-300">
+                For Students & Learners
+              </h3>
+              <p className="text-gray-400 leading-relaxed">
+                Designed specifically for students, educators, and anyone
+                looking to master mathematics with an intuitive, modern
+                interface.
+              </p>
             </div>
           </div>
         </div>
@@ -358,9 +414,12 @@ const Homepage = () => {
       <div className="py-16">
         <div className="max-w-2xl mx-auto text-center">
           <blockquote className="text-lg md:text-2xl lg:text-3xl font-light italic text-gray-300 mb-6">
-            "Mathematics is not about numbers, equations, computations, or algorithms: it is about understanding."
+            "Mathematics is not about numbers, equations, computations, or
+            algorithms: it is about understanding."
           </blockquote>
-          <cite className="text-lg text-accent-purple font-semibold">- Akshay Mishra, Developer</cite>
+          <cite className="text-lg text-accent-purple font-semibold">
+            - Akshay Mishra, Developer
+          </cite>
         </div>
       </div>
     </main>
@@ -383,12 +442,12 @@ const ProtectedSolver = () => {
   }
 
   if (!user) {
-    navigate('/login');
+    navigate("/login");
     return null;
   }
 
   const apiConfig = {
-    provider: 'openrouter'
+    provider: "openrouter",
     // modelName will be determined by backend environment variable
   };
 
@@ -396,7 +455,7 @@ const ProtectedSolver = () => {
     <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="py-4">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="inline-flex items-center px-6 py-3 text-white font-semibold hover:text-accent-purple transition-colors duration-300"
         >
           <ArrowLeft className="mr-2 w-4 h-4" />
@@ -406,4 +465,5 @@ const ProtectedSolver = () => {
       <MathSolver apiConfig={apiConfig} />
     </main>
   );
-};export default App;
+};
+export default App;

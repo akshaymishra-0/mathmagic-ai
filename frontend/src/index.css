@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -27,11 +27,12 @@ a {
   * {
     @apply border-dark-border;
   }
-  
+
   body {
     @apply bg-dark-bg text-gray-100 antialiased;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
   }
 
   ::-webkit-scrollbar {
@@ -95,7 +96,8 @@ a {
 
 /* Shape and Icon Animations */
 @keyframes float2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) scale(1);
   }
   50% {
@@ -104,7 +106,8 @@ a {
 }
 
 @keyframes float3 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateX(0px) rotate(0deg);
   }
   50% {
@@ -113,7 +116,8 @@ a {
 }
 
 @keyframes float4 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px) translateX(0px);
   }
   33% {
@@ -125,7 +129,8 @@ a {
 }
 
 @keyframes bounce-slow {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -151,7 +156,8 @@ a {
 
 /* Additional animations */
 @keyframes pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
   }
   50% {
@@ -172,7 +178,8 @@ a {
 }
 
 @keyframes up-down {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -181,7 +188,8 @@ a {
 }
 
 @keyframes fade-in-out {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.3;
   }
   50% {
@@ -191,7 +199,8 @@ a {
 
 /* Modern Blob Animations */
 @keyframes blob1 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
   33% {
@@ -203,7 +212,8 @@ a {
 }
 
 @keyframes blob2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
   25% {
@@ -218,7 +228,8 @@ a {
 }
 
 @keyframes blob3 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1);
   }
   50% {
@@ -227,7 +238,8 @@ a {
 }
 
 @keyframes blob4 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) rotate(0deg) scale(1);
   }
   25% {
@@ -242,7 +254,8 @@ a {
 }
 
 @keyframes blob5 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0px, 0px) scale(1) rotate(0deg);
   }
   40% {

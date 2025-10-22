@@ -133,12 +133,12 @@ export class AIService {
       let cleanContent = content.trim();
 
       // Remove any leading/trailing markdown or text
-      cleanContent = cleanContent.replace(/^[\s\S]*?```(?:json)?\s*\n?/, '');
-      cleanContent = cleanContent.replace(/\n?```\s*[\s\S]*$/, '');
+      cleanContent = cleanContent.replace(/^[\s\S]*?```(?:json)?\s*\n?/, "");
+      cleanContent = cleanContent.replace(/\n?```\s*[\s\S]*$/, "");
 
       // Try to find JSON object boundaries
-      const startIndex = cleanContent.indexOf('{');
-      const lastIndex = cleanContent.lastIndexOf('}');
+      const startIndex = cleanContent.indexOf("{");
+      const lastIndex = cleanContent.lastIndexOf("}");
 
       if (startIndex !== -1 && lastIndex !== -1 && lastIndex > startIndex) {
         cleanContent = cleanContent.substring(startIndex, lastIndex + 1);
@@ -148,7 +148,7 @@ export class AIService {
       const parsed = JSON.parse(cleanContent);
 
       // Validate structure
-      if (!parsed || typeof parsed !== 'object') {
+      if (!parsed || typeof parsed !== "object") {
         throw new Error("Response is not a valid object");
       }
 
@@ -210,28 +210,36 @@ export class AIService {
     }
 
     const toReadable = (val) => {
-      if (val === null || val === undefined) return '';
-      if (typeof val === 'string') return val;
-      if (typeof val === 'number' || typeof val === 'boolean') return String(val);
+      if (val === null || val === undefined) return "";
+      if (typeof val === "string") return val;
+      if (typeof val === "number" || typeof val === "boolean")
+        return String(val);
       if (Array.isArray(val)) {
         // If array of points like {x,y}, format them nicely
-        if (val.length > 0 && typeof val[0] === 'object' && 'x' in val[0] && 'y' in val[0]) {
-          return val.map(p => `x: ${p.x}, y: ${p.y}`).join('\n');
+        if (
+          val.length > 0 &&
+          typeof val[0] === "object" &&
+          "x" in val[0] &&
+          "y" in val[0]
+        ) {
+          return val.map((p) => `x: ${p.x}, y: ${p.y}`).join("\n");
         }
 
         // If array of primitives or strings, join with newlines
-        return val.map(item => toReadable(item)).join('\n');
+        return val.map((item) => toReadable(item)).join("\n");
       }
-      if (typeof val === 'object') {
+      if (typeof val === "object") {
         // If object has lines array, join those
-        if (Array.isArray(val.lines)) return val.lines.join('\n');
+        if (Array.isArray(val.lines)) return val.lines.join("\n");
 
         // If it's a point-like object
-        if ('x' in val && 'y' in val) return `x: ${val.x}, y: ${val.y}`;
+        if ("x" in val && "y" in val) return `x: ${val.x}, y: ${val.y}`;
 
         // Otherwise, convert key: value pairs into lines
         try {
-          return Object.entries(val).map(([k, v]) => `${k}: ${toReadable(v)}`).join('\n');
+          return Object.entries(val)
+            .map(([k, v]) => `${k}: ${toReadable(v)}`)
+            .join("\n");
         } catch (e) {
           return String(val);
         }
@@ -241,24 +249,34 @@ export class AIService {
     };
 
     // Normalize finalAnswer
-    obj.finalAnswer = toReadable(obj.finalAnswer || obj.answer || '');
+    obj.finalAnswer = toReadable(obj.finalAnswer || obj.answer || "");
 
     // Normalize steps
     if (Array.isArray(obj.steps)) {
       obj.steps = obj.steps.map((step, idx) => {
-        const safeStep = (step && typeof step === 'object') ? Object.assign({}, step) : { explanation: step };
+        const safeStep =
+          step && typeof step === "object"
+            ? Object.assign({}, step)
+            : { explanation: step };
 
         safeStep.title = toReadable(safeStep.title || `Step ${idx + 1}`);
-        safeStep.explanation = toReadable(safeStep.explanation || '');
-        safeStep.formula = toReadable(safeStep.formula || '');
-        safeStep.calculation = toReadable(safeStep.calculation || '');
+        safeStep.explanation = toReadable(safeStep.explanation || "");
+        safeStep.formula = toReadable(safeStep.formula || "");
+        safeStep.calculation = toReadable(safeStep.calculation || "");
 
         return safeStep;
       });
     } else {
       // If steps is a single string/object, coerce into array
       if (obj.steps) {
-        obj.steps = [{ title: 'Solution', explanation: toReadable(obj.steps), formula: '', calculation: '' }];
+        obj.steps = [
+          {
+            title: "Solution",
+            explanation: toReadable(obj.steps),
+            formula: "",
+            calculation: "",
+          },
+        ];
       } else {
         obj.steps = [];
       }
@@ -269,17 +287,17 @@ export class AIService {
       const gd = Object.assign({}, obj.graphData);
 
       // Ensure type
-      gd.type = gd.type || 'none';
+      gd.type = gd.type || "none";
 
       // Equation
-      gd.equation = toReadable(gd.equation || '');
+      gd.equation = toReadable(gd.equation || "");
 
       // Points: try to coerce x/y to numbers where possible
       if (Array.isArray(gd.points)) {
-        gd.points = gd.points.map(p => {
-          if (p && typeof p === 'object') {
-            const nx = (typeof p.x === 'number') ? p.x : (Number(p.x) || 0);
-            const ny = (typeof p.y === 'number') ? p.y : (Number(p.y) || 0);
+        gd.points = gd.points.map((p) => {
+          if (p && typeof p === "object") {
+            const nx = typeof p.x === "number" ? p.x : Number(p.x) || 0;
+            const ny = typeof p.y === "number" ? p.y : Number(p.y) || 0;
             return { x: nx, y: ny };
           }
           return p;
@@ -289,11 +307,17 @@ export class AIService {
       }
 
       // Domain & range ensure numeric min/max
-      if (gd.domain && typeof gd.domain === 'object') {
-        gd.domain = { min: Number(gd.domain.min) || 0, max: Number(gd.domain.max) || 0 };
+      if (gd.domain && typeof gd.domain === "object") {
+        gd.domain = {
+          min: Number(gd.domain.min) || 0,
+          max: Number(gd.domain.max) || 0,
+        };
       }
-      if (gd.range && typeof gd.range === 'object') {
-        gd.range = { min: Number(gd.range.min) || 0, max: Number(gd.range.max) || 0 };
+      if (gd.range && typeof gd.range === "object") {
+        gd.range = {
+          min: Number(gd.range.min) || 0,
+          max: Number(gd.range.max) || 0,
+        };
       }
 
       obj.graphData = gd;

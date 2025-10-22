@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { Send, Loader2, BookOpen, Lightbulb, TrendingUp, Calculator, RotateCcw } from 'lucide-react';
-import StepAccordion from './StepAccordion';
-import GraphVisualizer from './GraphVisualizer';
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+import {
+  Send,
+  Loader2,
+  BookOpen,
+  Lightbulb,
+  TrendingUp,
+  Calculator,
+  RotateCcw,
+} from "lucide-react";
+import StepAccordion from "./StepAccordion";
+import GraphVisualizer from "./GraphVisualizer";
 
 const EXAMPLE_QUESTIONS = [
   "Solve the quadratic equation: x² - 5x + 6 = 0",
@@ -15,7 +23,7 @@ const EXAMPLE_QUESTIONS = [
 
 const MathSolver = ({ apiConfig }) => {
   const location = useLocation();
-  const [question, setQuestion] = useState('');
+  const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [solution, setSolution] = useState(null);
 
@@ -30,9 +38,9 @@ const MathSolver = ({ apiConfig }) => {
 
   const handleSolve = async (e) => {
     e.preventDefault();
-    
+
     if (!question.trim()) {
-      toast.error('Please enter a math question');
+      toast.error("Please enter a math question");
       return;
     }
 
@@ -40,21 +48,21 @@ const MathSolver = ({ apiConfig }) => {
     setSolution(null);
 
     try {
-      const response = await axios.post('/api/solve', {
+      const response = await axios.post("/api/solve", {
         question: question.trim(),
         provider: apiConfig.provider,
-        modelName: apiConfig.modelName
+        modelName: apiConfig.modelName,
       });
 
       if (response.data.success) {
         setSolution(response.data.data);
-        toast.success('Problem solved successfully!');
+        toast.success("Problem solved successfully!");
       } else {
         throw new Error(response.data.error);
       }
     } catch (error) {
-      console.error('Error:', error);
-      toast.error(error.response?.data?.error || 'Failed to solve the problem');
+      console.error("Error:", error);
+      toast.error(error.response?.data?.error || "Failed to solve the problem");
     } finally {
       setLoading(false);
     }
@@ -66,19 +74,19 @@ const MathSolver = ({ apiConfig }) => {
   };
 
   const clearAll = () => {
-    setQuestion('');
+    setQuestion("");
     setSolution(null);
     setLoading(false);
   };
 
   const getTopicColor = (topic) => {
     const colors = {
-      'Calculus': 'from-purple-500 to-pink-500',
-      'Algebra': 'from-blue-500 to-cyan-500',
-      'Geometry': 'from-green-500 to-emerald-500',
-      'Trigonometry': 'from-orange-500 to-red-500',
-      'Probability': 'from-yellow-500 to-orange-500',
-      'default': 'from-accent-purple to-accent-blue'
+      Calculus: "from-purple-500 to-pink-500",
+      Algebra: "from-blue-500 to-cyan-500",
+      Geometry: "from-green-500 to-emerald-500",
+      Trigonometry: "from-orange-500 to-red-500",
+      Probability: "from-yellow-500 to-orange-500",
+      default: "from-accent-purple to-accent-blue",
     };
     return colors[topic] || colors.default;
   };
@@ -160,7 +168,9 @@ const MathSolver = ({ apiConfig }) => {
           <div className="inline-block p-4 bg-accent-purple/20 rounded-full mb-4">
             <Loader2 className="w-12 h-12 text-accent-purple animate-spin" />
           </div>
-          <h3 className="text-xl font-semibold mb-2">Analyzing your problem...</h3>
+          <h3 className="text-xl font-semibold mb-2">
+            Analyzing your problem...
+          </h3>
           <p className="text-gray-400">Our AI is working on the solution</p>
         </div>
       )}
@@ -176,7 +186,9 @@ const MathSolver = ({ apiConfig }) => {
                 <h2 className="text-xl font-semibold">Solution</h2>
               </div>
               {solution.topic && (
-                <span className={`topic-badge ${getTopicColor(solution.topic)}`}>
+                <span
+                  className={`topic-badge ${getTopicColor(solution.topic)}`}
+                >
                   {solution.topic}
                 </span>
               )}
@@ -184,7 +196,12 @@ const MathSolver = ({ apiConfig }) => {
 
             <div className="bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-accent-green/30 rounded-xl p-4 md:p-6">
               <p className="text-sm text-gray-400 mb-2">Final Answer:</p>
-              <p className="text-lg md:text-2xl font-bold text-accent-green break-words whitespace-pre-line" style={{wordBreak: 'break-word', overflowWrap: 'break-word'}}>{solution.finalAnswer}</p>
+              <p
+                className="text-lg md:text-2xl font-bold text-accent-green break-words whitespace-pre-line"
+                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+              >
+                {solution.finalAnswer}
+              </p>
             </div>
           </div>
 
@@ -194,7 +211,7 @@ const MathSolver = ({ apiConfig }) => {
           )}
 
           {/* Graph Visualization */}
-          {solution.graphData && solution.graphData.type !== 'none' && (
+          {solution.graphData && solution.graphData.type !== "none" && (
             <GraphVisualizer graphData={solution.graphData} />
           )}
         </div>
@@ -206,8 +223,12 @@ const MathSolver = ({ apiConfig }) => {
           <div className="inline-block p-4 bg-accent-purple/20 rounded-full mb-4">
             <Calculator className="w-12 h-12 text-accent-purple" />
           </div>
-          <h3 className="text-xl font-semibold mb-2">Ready to solve any math problem!</h3>
-          <p className="text-gray-400">Enter a question above or try one of the examples</p>
+          <h3 className="text-xl font-semibold mb-2">
+            Ready to solve any math problem!
+          </h3>
+          <p className="text-gray-400">
+            Enter a question above or try one of the examples
+          </p>
         </div>
       )}
     </div>

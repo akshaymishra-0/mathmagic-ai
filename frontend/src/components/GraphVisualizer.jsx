@@ -1,6 +1,17 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ScatterChart, Scatter, ReferenceLine } from 'recharts';
-import { TrendingUp, Maximize2 } from 'lucide-react';
+import React from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+  ReferenceLine,
+} from "recharts";
+import { TrendingUp, Maximize2 } from "lucide-react";
 
 const GraphVisualizer = ({ graphData }) => {
   if (!graphData || !graphData.points || graphData.points.length === 0) {
@@ -25,10 +36,12 @@ const GraphVisualizer = ({ graphData }) => {
     }
 
     // Auto-calculate domain from data points
-    const values = isX ? dataPoints.map(p => p.x) : dataPoints.map(p => p.y);
+    const values = isX
+      ? dataPoints.map((p) => p.x)
+      : dataPoints.map((p) => p.y);
     const min = Math.min(...values);
     const max = Math.max(...values);
-    
+
     // Always include 0 and extend to show all quadrants
     const absMax = Math.max(Math.abs(min), Math.abs(max), 5); // Minimum range of 10 units
     return [-absMax, absMax];
@@ -42,10 +55,12 @@ const GraphVisualizer = ({ graphData }) => {
       return (
         <div className="glass-effect px-3 py-2 rounded-lg shadow-xl">
           <p className="text-sm">
-            <span className="text-accent-blue">x:</span> {payload[0].payload.x.toFixed(2)}
+            <span className="text-accent-blue">x:</span>{" "}
+            {payload[0].payload.x.toFixed(2)}
           </p>
           <p className="text-sm">
-            <span className="text-accent-green">y:</span> {payload[0].payload.y.toFixed(2)}
+            <span className="text-accent-green">y:</span>{" "}
+            {payload[0].payload.y.toFixed(2)}
           </p>
         </div>
       );
@@ -63,78 +78,119 @@ const GraphVisualizer = ({ graphData }) => {
           </div>
           {equation && (
             <p className="text-sm text-gray-400">
-              Equation: <code className="text-accent-blue font-mono">{equation}</code>
+              Equation:{" "}
+              <code className="text-accent-blue font-mono">{equation}</code>
             </p>
           )}
         </div>
         <div className="topic-badge from-accent-orange to-accent-purple">
-          {type || 'Graph'}
+          {type || "Graph"}
         </div>
       </div>
 
       <div className="bg-dark-card rounded-xl p-3 md:p-6 border border-dark-border">
         <ResponsiveContainer width="100%" height={450}>
-          {type === 'scatter' ? (
+          {type === "scatter" ? (
             <ScatterChart margin={{ top: 10, right: 15, left: 10, bottom: 10 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#2a2a35" />
-              <XAxis 
-                type="number" 
-                dataKey="x" 
+              <XAxis
+                type="number"
+                dataKey="x"
                 stroke="#3b82f6"
                 domain={xDomain}
-                axisLine={{ stroke: '#3b82f6', strokeWidth: 2 }}
-                tickLine={{ stroke: '#3b82f6' }}
-                tick={{ fill: '#3b82f6', fontSize: 12 }}
-                label={{ value: 'X-Axis', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#3b82f6', fontSize: '14px', fontWeight: 'bold' } }}
+                axisLine={{ stroke: "#3b82f6", strokeWidth: 2 }}
+                tickLine={{ stroke: "#3b82f6" }}
+                tick={{ fill: "#3b82f6", fontSize: 12 }}
+                label={{
+                  value: "X-Axis",
+                  position: "insideBottom",
+                  offset: -10,
+                  style: {
+                    textAnchor: "middle",
+                    fill: "#3b82f6",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  },
+                }}
               />
-              <YAxis 
-                type="number" 
-                dataKey="y" 
+              <YAxis
+                type="number"
+                dataKey="y"
                 stroke="#10b981"
                 domain={yDomain}
-                axisLine={{ stroke: '#10b981', strokeWidth: 2 }}
-                tickLine={{ stroke: '#10b981' }}
-                tick={{ fill: '#10b981', fontSize: 12 }}
-                label={{ value: 'Y-Axis', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#10b981', fontSize: '14px', fontWeight: 'bold' } }}
+                axisLine={{ stroke: "#10b981", strokeWidth: 2 }}
+                tickLine={{ stroke: "#10b981" }}
+                tick={{ fill: "#10b981", fontSize: 12 }}
+                label={{
+                  value: "Y-Axis",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: {
+                    textAnchor: "middle",
+                    fill: "#10b981",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  },
+                }}
               />
               <ReferenceLine x={0} stroke="#3b82f6" strokeWidth={2} />
               <ReferenceLine y={0} stroke="#10b981" strokeWidth={2} />
               <Tooltip content={<CustomTooltip />} />
-              <Scatter 
-                data={sortedPoints} 
-                fill="#8b5cf6" 
-              />
+              <Scatter data={sortedPoints} fill="#8b5cf6" />
             </ScatterChart>
           ) : (
-            <LineChart data={sortedPoints} margin={{ top: 10, right: 15, left: 10, bottom: 10 }}>
+            <LineChart
+              data={sortedPoints}
+              margin={{ top: 10, right: 15, left: 10, bottom: 10 }}
+            >
               <CartesianGrid strokeDasharray="3 3" stroke="#2a2a35" />
-              <XAxis 
-                dataKey="x" 
+              <XAxis
+                dataKey="x"
                 stroke="#3b82f6"
                 domain={xDomain}
-                axisLine={{ stroke: '#3b82f6', strokeWidth: 2 }}
-                tickLine={{ stroke: '#3b82f6' }}
-                tick={{ fill: '#3b82f6', fontSize: 12 }}
-                label={{ value: 'X-Axis', position: 'insideBottom', offset: -10, style: { textAnchor: 'middle', fill: '#3b82f6', fontSize: '14px', fontWeight: 'bold' } }}
+                axisLine={{ stroke: "#3b82f6", strokeWidth: 2 }}
+                tickLine={{ stroke: "#3b82f6" }}
+                tick={{ fill: "#3b82f6", fontSize: 12 }}
+                label={{
+                  value: "X-Axis",
+                  position: "insideBottom",
+                  offset: -10,
+                  style: {
+                    textAnchor: "middle",
+                    fill: "#3b82f6",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  },
+                }}
               />
-              <YAxis 
+              <YAxis
                 stroke="#10b981"
                 domain={yDomain}
-                axisLine={{ stroke: '#10b981', strokeWidth: 2 }}
-                tickLine={{ stroke: '#10b981' }}
-                tick={{ fill: '#10b981', fontSize: 12 }}
-                label={{ value: 'Y-Axis', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle', fill: '#10b981', fontSize: '14px', fontWeight: 'bold' } }}
+                axisLine={{ stroke: "#10b981", strokeWidth: 2 }}
+                tickLine={{ stroke: "#10b981" }}
+                tick={{ fill: "#10b981", fontSize: 12 }}
+                label={{
+                  value: "Y-Axis",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: {
+                    textAnchor: "middle",
+                    fill: "#10b981",
+                    fontSize: "14px",
+                    fontWeight: "bold",
+                  },
+                }}
               />
               <ReferenceLine x={0} stroke="#3b82f6" strokeWidth={2} />
               <ReferenceLine y={0} stroke="#10b981" strokeWidth={2} />
               <Tooltip content={<CustomTooltip />} />
-              <Line 
-                type="monotone" 
-                dataKey="y" 
-                stroke="url(#colorGradient)" 
+              <Line
+                type="monotone"
+                dataKey="y"
+                stroke="url(#colorGradient)"
                 strokeWidth={3}
                 dot={false}
-                activeDot={{ r: 6, fill: '#8b5cf6' }}
+                activeDot={{ r: 6, fill: "#8b5cf6" }}
               />
               <defs>
                 <linearGradient id="colorGradient" x1="0" y1="0" x2="1" y2="0">

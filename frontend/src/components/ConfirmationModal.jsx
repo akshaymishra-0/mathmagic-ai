@@ -1,14 +1,23 @@
-import React from 'react';
-import { X, LogOut, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { X, LogOut, AlertTriangle } from "lucide-react";
 
-const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Confirm", cancelText = "Cancel", type = "warning" }) => {
+const ConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  type = "warning",
+}) => {
   if (!isOpen) return null;
 
   const getIcon = () => {
     switch (type) {
-      case 'warning':
+      case "warning":
         return <AlertTriangle className="w-8 h-8 text-orange-400" />;
-      case 'danger':
+      case "danger":
         return <LogOut className="w-8 h-8 text-red-400" />;
       default:
         return <AlertTriangle className="w-8 h-8 text-accent-purple" />;
@@ -17,12 +26,12 @@ const ConfirmationModal = ({ isOpen, onClose, onConfirm, title, message, confirm
 
   const getConfirmButtonStyle = () => {
     switch (type) {
-      case 'warning':
-        return 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600';
-      case 'danger':
-        return 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700';
+      case "warning":
+        return "bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600";
+      case "danger":
+        return "bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700";
       default:
-        return 'bg-gradient-to-r from-accent-purple to-accent-blue hover:from-accent-purple/90 hover:to-accent-blue/90';
+        return "bg-gradient-to-r from-accent-purple to-accent-blue hover:from-accent-purple/90 hover:to-accent-blue/90";
     }
   };
 

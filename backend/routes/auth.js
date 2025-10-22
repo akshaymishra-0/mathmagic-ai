@@ -1,43 +1,46 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
-import Calculation from '../models/Calculation.js';
+import express from "express";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const router = express.Router();
 
 // Middleware to verify JWT token
 export const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({
       success: false,
-      error: 'Access token required'
+      error: "Access token required",
     });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key', (err, user) => {
-    if (err) {
-      return res.status(403).json({
-        success: false,
-        error: 'Invalid or expired token'
-      });
+  jwt.verify(
+    token,
+    process.env.JWT_SECRET || "your-secret-key",
+    (err, user) => {
+      if (err) {
+        return res.status(403).json({
+          success: false,
+          error: "Invalid or expired token",
+        });
+      }
+      req.user = user;
+      next();
     }
-    req.user = user;
-    next();
-  });
+  );
 };
 
 // Signup route
-router.post('/signup', async (req, res) => {
+router.post("/signup", async (req, res) => {
   try {
     const { email, password, name } = req.body;
 
     if (!email || !password || !name) {
       return res.status(400).json({
         success: false,
-        error: 'Email, password, and name are required'
+        error: "Email, password, and name are required",
       });
     }
 
@@ -46,7 +49,7 @@ router.post('/signup', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        error: 'User with this email already exists'
+        error: "User with this email already exists",
       });
     }
 
@@ -54,7 +57,7 @@ router.post('/signup', async (req, res) => {
     const user = new User({
       email: email.toLowerCase(),
       password,
-      name
+      name,
     });
 
     await user.save();
@@ -62,8 +65,8 @@ router.post('/signup', async (req, res) => {
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '30d' }
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "30d" }
     );
 
     res.status(201).json({
@@ -72,30 +75,29 @@ router.post('/signup', async (req, res) => {
         user: {
           id: user._id,
           email: user.email,
-          name: user.name
+          name: user.name,
         },
-        token
-      }
+        token,
+      },
     });
-
   } catch (error) {
-    console.error('Signup Error:', error);
+    console.error("Signup Error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to create account'
+      error: "Failed to create account",
     });
   }
 });
 
 // Signin route
-router.post('/signin', async (req, res) => {
+router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        error: 'Email and password are required'
+        error: "Email and password are required",
       });
     }
 
@@ -104,7 +106,7 @@ router.post('/signin', async (req, res) => {
     if (!user) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid email or password'
+        error: "Invalid email or password",
       });
     }
 
@@ -113,15 +115,15 @@ router.post('/signin', async (req, res) => {
     if (!isValidPassword) {
       return res.status(401).json({
         success: false,
-        error: 'Invalid email or password'
+        error: "Invalid email or password",
       });
     }
 
     // Generate JWT token
     const token = jwt.sign(
       { userId: user._id, email: user.email },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '30d' }
+      process.env.JWT_SECRET || "your-secret-key",
+      { expiresIn: "30d" }
     );
 
     res.json({
@@ -130,34 +132,32 @@ router.post('/signin', async (req, res) => {
         user: {
           id: user._id,
           email: user.email,
-          name: user.name
+          name: user.name,
         },
-        token
-      }
+        token,
+      },
     });
-
   } catch (error) {
-    console.error('Signin Error:', error);
+    console.error("Signin Error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to sign in'
+      error: "Failed to sign in",
     });
   }
 });
 
 // Get user profile with recent calculations
-router.get('/profile', authenticateToken, async (req, res) => {
+router.get("/profile", authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId)
-      .populate({
-        path: 'calculations',
-        options: { sort: { createdAt: -1 } }
-      });
+    const user = await User.findById(req.user.userId).populate({
+      path: "calculations",
+      options: { sort: { createdAt: -1 } },
+    });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: "User not found",
       });
     }
 
@@ -168,67 +168,64 @@ router.get('/profile', authenticateToken, async (req, res) => {
           id: user._id,
           email: user.email,
           name: user.name,
-          calculations: user.calculations
-        }
-      }
+          calculations: user.calculations,
+        },
+      },
     });
-
   } catch (error) {
-    console.error('Profile Error:', error);
+    console.error("Profile Error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to get profile'
+      error: "Failed to get profile",
     });
   }
 });
 
 // Get user calculation history
-router.get('/history', authenticateToken, async (req, res) => {
+router.get("/history", authenticateToken, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId)
-      .populate({
-        path: 'calculations',
-        options: { sort: { createdAt: -1 } }
-      });
+    const user = await User.findById(req.user.userId).populate({
+      path: "calculations",
+      options: { sort: { createdAt: -1 } },
+    });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: "User not found",
       });
     }
 
     res.json({
       success: true,
       data: {
-        calculations: user.calculations.map(calc => ({
+        calculations: user.calculations.map((calc) => ({
           id: calc._id,
           question: calc.question,
           createdAt: calc.createdAt,
           provider: calc.provider,
-          modelName: calc.modelName
-        }))
-      }
+          modelName: calc.modelName,
+        })),
+      },
     });
-
   } catch (error) {
-    console.error('History Error:', error);
+    console.error("History Error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to get calculation history'
+      error: "Failed to get calculation history",
     });
   }
 });
 
 // Update user profile (name and email)
-router.put('/profile', authenticateToken, async (req, res) => {
+router.put("/profile", authenticateToken, async (req, res) => {
   try {
     const { name, email } = req.body;
 
     if (!name && !email) {
       return res.status(400).json({
         success: false,
-        error: 'At least one field (name or email) must be provided'
+        error: "At least one field (name or email) must be provided",
       });
     }
 
@@ -240,26 +237,24 @@ router.put('/profile', authenticateToken, async (req, res) => {
     if (email) {
       const existingUser = await User.findOne({
         email: email.toLowerCase(),
-        _id: { $ne: req.user.userId }
+        _id: { $ne: req.user.userId },
       });
       if (existingUser) {
         return res.status(400).json({
           success: false,
-          error: 'Email is already taken by another user'
+          error: "Email is already taken by another user",
         });
       }
     }
 
-    const user = await User.findByIdAndUpdate(
-      req.user.userId,
-      updateData,
-      { new: true }
-    );
+    const user = await User.findByIdAndUpdate(req.user.userId, updateData, {
+      new: true,
+    });
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: "User not found",
       });
     }
 
@@ -269,29 +264,28 @@ router.put('/profile', authenticateToken, async (req, res) => {
         user: {
           id: user._id,
           email: user.email,
-          name: user.name
-        }
-      }
+          name: user.name,
+        },
+      },
     });
-
   } catch (error) {
-    console.error('Update Profile Error:', error);
+    console.error("Update Profile Error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to update profile'
+      error: "Failed to update profile",
     });
   }
 });
 
 // Change user password
-router.put('/change-password', authenticateToken, async (req, res) => {
+router.put("/change-password", authenticateToken, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
     if (!currentPassword || !newPassword) {
       return res.status(400).json({
         success: false,
-        error: 'Current password and new password are required'
+        error: "Current password and new password are required",
       });
     }
 
@@ -300,7 +294,7 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: 'User not found'
+        error: "User not found",
       });
     }
 
@@ -309,7 +303,7 @@ router.put('/change-password', authenticateToken, async (req, res) => {
     if (!isCurrentPasswordValid) {
       return res.status(400).json({
         success: false,
-        error: 'Current password is incorrect'
+        error: "Current password is incorrect",
       });
     }
 
@@ -319,14 +313,13 @@ router.put('/change-password', authenticateToken, async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Password changed successfully'
+      message: "Password changed successfully",
     });
-
   } catch (error) {
-    console.error('Change Password Error:', error);
+    console.error("Change Password Error:", error);
     res.status(500).json({
       success: false,
-      error: 'Failed to change password'
+      error: "Failed to change password",
     });
   }
 });

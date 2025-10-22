@@ -1,41 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import { ArrowLeft, User, Mail, Lock, Edit2, Check, X } from 'lucide-react';
-import axios from 'axios';
-import toast from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { ArrowLeft, User, Mail, Lock, Edit2, Check, X } from "lucide-react";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Profile = () => {
   const navigate = useNavigate();
   const { user, fetchUserProfile } = useAuth();
   const [editingField, setEditingField] = useState(null);
   const [editValues, setEditValues] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
-    password: ''
+    name: user?.name || "",
+    email: user?.email || "",
+    password: "",
   });
   const [loading, setLoading] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
   useEffect(() => {
     if (user) {
       setEditValues({
-        name: user.name || '',
-        email: user.email || '',
-        password: ''
+        name: user.name || "",
+        email: user.email || "",
+        password: "",
       });
     }
   }, [user]);
 
   const handleEdit = (field) => {
     setEditingField(field);
-    setEditValues(prev => ({
+    setEditValues((prev) => ({
       ...prev,
-      [field]: user[field] || ''
+      [field]: user[field] || "",
     }));
   };
 
@@ -43,15 +43,17 @@ const Profile = () => {
     setLoading(true);
 
     try {
-      if (field === 'name' || field === 'email') {
-        const response = await axios.put('/api/auth/profile', {
-          [field]: editValues[field]
+      if (field === "name" || field === "email") {
+        const response = await axios.put("/api/auth/profile", {
+          [field]: editValues[field],
         });
 
         if (response.data.success) {
           // Refresh user data
           await fetchUserProfile();
-          toast.success(`${field === 'name' ? 'Name' : 'Email'} updated successfully!`);
+          toast.success(
+            `${field === "name" ? "Name" : "Email"} updated successfully!`
+          );
         }
       }
     } catch (error) {
@@ -66,18 +68,18 @@ const Profile = () => {
   const handleCancel = () => {
     setEditingField(null);
     setEditValues({
-      name: user?.name || '',
-      email: user?.email || '',
-      password: ''
+      name: user?.name || "",
+      email: user?.email || "",
+      password: "",
     });
   };
 
   const handleClosePasswordModal = () => {
     setShowPasswordModal(false);
     setPasswordData({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
     });
   };
 
@@ -90,28 +92,28 @@ const Profile = () => {
     setLoading(true);
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('New passwords do not match');
+      toast.error("New passwords do not match");
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.put('/api/auth/change-password', {
+      const response = await axios.put("/api/auth/change-password", {
         currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword
+        newPassword: passwordData.newPassword,
       });
 
       if (response.data.success) {
-        toast.success('Password changed successfully!');
+        toast.success("Password changed successfully!");
         setShowPasswordModal(false);
         setPasswordData({
-          currentPassword: '',
-          newPassword: '',
-          confirmPassword: ''
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
         });
       }
     } catch (error) {
-      toast.error(error.response?.data?.error || 'Failed to change password');
+      toast.error(error.response?.data?.error || "Failed to change password");
     } finally {
       setLoading(false);
     }
@@ -119,7 +121,7 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
     }
   }, [user, navigate]);
 
@@ -132,11 +134,11 @@ const Profile = () => {
       {/* Back Button */}
       <div className="mb-8">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
           className="inline-flex items-center px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base text-white font-semibold hover:text-accent-purple transition-colors duration-300"
         >
           <ArrowLeft className="mr-2 w-4 h-4" />
-          Back to Home
+          Home
         </button>
       </div>
 
@@ -146,7 +148,7 @@ const Profile = () => {
           <User className="w-16 h-16 text-accent-purple" />
         </div>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent mb-2">
-          {user?.name || 'User'}
+          {user?.name || "User"}
         </h1>
         <p className="text-gray-400">Manage your account information</p>
       </div>
@@ -161,23 +163,29 @@ const Profile = () => {
                 <User className="w-6 h-6 text-accent-purple" />
               </div>
               <div>
-                <h3 className="text-base sm:text-lg font-semibold text-white">Full Name</h3>
-                <p className="text-gray-400">Your display name</p>
+                <h3 className="text-base sm:text-lg font-semibold text-white">
+                  Full Name
+                </h3>
               </div>
             </div>
             <div className="flex-1 max-w-md md:ml-8">
-              {editingField === 'name' ? (
+              {editingField === "name" ? (
                 <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2 sm:space-y-0">
                   <input
                     type="text"
                     value={editValues.name}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setEditValues((prev) => ({
+                        ...prev,
+                        name: e.target.value,
+                      }))
+                    }
                     className="flex-1 px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-purple focus:outline-none"
                     placeholder="Enter your full name"
                   />
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
-                      onClick={() => handleSave('name')}
+                      onClick={() => handleSave("name")}
                       className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all shadow-lg hover:shadow-xl"
                     >
                       Save
@@ -194,7 +202,7 @@ const Profile = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-white font-medium">{user.name}</span>
                   <button
-                    onClick={() => handleEdit('name')}
+                    onClick={() => handleEdit("name")}
                     className="p-2 text-gray-400 hover:text-accent-purple transition-colors"
                     title="Edit name"
                   >
@@ -212,23 +220,29 @@ const Profile = () => {
                 <Mail className="w-6 h-6 text-accent-blue" />
               </div>
               <div>
-                <h3 className="text-base sm:text-lg font-semibold text-white">Email Address</h3>
-                <p className="text-gray-400">Your login email</p>
+                <h3 className="text-base sm:text-lg font-semibold text-white">
+                  Email Address
+                </h3>
               </div>
             </div>
             <div className="flex-1 max-w-md md:ml-8">
-              {editingField === 'email' ? (
+              {editingField === "email" ? (
                 <div className="flex flex-col sm:flex-row gap-2 sm:space-x-2 sm:space-y-0">
                   <input
                     type="email"
                     value={editValues.email}
-                    onChange={(e) => setEditValues(prev => ({ ...prev, email: e.target.value }))}
+                    onChange={(e) =>
+                      setEditValues((prev) => ({
+                        ...prev,
+                        email: e.target.value,
+                      }))
+                    }
                     className="flex-1 px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-blue focus:outline-none"
                     placeholder="Enter your email"
                   />
                   <div className="flex flex-col sm:flex-row gap-2">
                     <button
-                      onClick={() => handleSave('email')}
+                      onClick={() => handleSave("email")}
                       className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all shadow-lg hover:shadow-xl"
                     >
                       Save
@@ -245,7 +259,7 @@ const Profile = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-white font-medium">{user.email}</span>
                   <button
-                    onClick={() => handleEdit('email')}
+                    onClick={() => handleEdit("email")}
                     className="p-2 text-gray-400 hover:text-accent-blue transition-colors"
                     title="Edit email"
                   >
@@ -263,8 +277,9 @@ const Profile = () => {
                 <Lock className="w-6 h-6 text-accent-green" />
               </div>
               <div>
-                <h3 className="text-base sm:text-lg font-semibold text-white">Password</h3>
-                <p className="text-gray-400">Your account password</p>
+                <h3 className="text-base sm:text-lg font-semibold text-white">
+                  Password
+                </h3>
               </div>
             </div>
             <div className="flex-1 max-w-md md:ml-8">
@@ -289,7 +304,9 @@ const Profile = () => {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-dark-card border border-dark-border rounded-2xl p-8 w-full max-w-md mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg sm:text-xl font-bold text-white">Change Password</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-white">
+                Change Password
+              </h2>
               <button
                 onClick={handleClosePasswordModal}
                 className="p-2 text-gray-400 hover:text-white transition-colors"
@@ -306,7 +323,12 @@ const Profile = () => {
                 <input
                   type="password"
                   value={passwordData.currentPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      currentPassword: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-purple focus:outline-none"
                   required
                 />
@@ -319,7 +341,12 @@ const Profile = () => {
                 <input
                   type="password"
                   value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      newPassword: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-purple focus:outline-none"
                   required
                 />
@@ -332,7 +359,12 @@ const Profile = () => {
                 <input
                   type="password"
                   value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
                   className="w-full px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-purple focus:outline-none"
                   required
                 />
@@ -352,14 +384,13 @@ const Profile = () => {
                   className="flex-1 px-3 py-2 sm:px-4 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all shadow-lg hover:shadow-xl disabled:opacity-50"
                   disabled={loading}
                 >
-                  {loading ? 'Changing...' : 'Change Password'}
+                  {loading ? "Changing..." : "Change Password"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
     </main>
   );
 };

@@ -1,7 +1,6 @@
 # 🎓 MathMagic - AI-Powered Mathematics Solver
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400/1a1a24/9333ea?text=MathMagic+AI+Solver" alt="MathMagic Demo" width="800" height="400">
 
   **An intelligent, modern web application that provides comprehensive step-by-step solutions to mathematics problems across all branches, powered by advanced AI technology with a stunning animated interface.**
 
@@ -30,6 +29,7 @@
 - **Mathematical Symbols**: Animated plus, division, pi, sigma, integral, square root, and multiplication symbols
 - **Responsive Animations**: Smooth floating, pulsing, and rotation animations
 - **Interactive Elements**: Hover effects, smooth transitions, and loading states
+- **Clickable Logo**: Logo and brand name navigate to home page
 
 ### 🔐 **User Authentication System**
 - **Secure Registration**: User signup with email and password validation
@@ -37,6 +37,7 @@
 - **Protected Routes**: Math solver accessible only to authenticated users
 - **Session Management**: Automatic logout and session handling
 - **User Dashboard**: Personalized experience with calculation history
+- **Profile Management**: Edit name, email, and password in user profile
 
 ### 📚 **Educational Excellence**
 - **Detailed Step-by-Step Solutions**: From basic concepts to final answers with explanations
@@ -44,6 +45,7 @@
 - **Formula Explanations**: Every mathematical formula used is clearly explained
 - **Progressive Difficulty**: Builds understanding from fundamentals to advanced concepts
 - **Student-Friendly**: Designed for students from middle school to university level
+- **Structured Response Formatting**: AI responses are automatically formatted into readable text and numeric data
 
 ### 📊 **Smart Database Management**
 - **Automatic Cleanup**: Maintains 1000 recent calculations to save storage
@@ -70,29 +72,29 @@
 ## 🛠️ Technology Stack
 
 ### 🎨 **Frontend**
-- **React 18.3.1**: Modern React with hooks and concurrent features
-- **Vite 5.4.8**: Lightning-fast build tool and development server
-- **Tailwind CSS 3.4.14**: Utility-first CSS framework with custom dark theme
+- **React 18.2.0**: Modern React with hooks and concurrent features
+- **Vite 5.0.8**: Lightning-fast build tool and development server
+- **Tailwind CSS 3.3.6**: Utility-first CSS framework with custom dark theme
 - **React Router DOM 6.28.0**: Client-side routing for single-page application
-- **Axios 1.7.7**: HTTP client for API communication
-- **Recharts 2.13.0**: Composable charting library for data visualization
-- **Lucide React 0.451.0**: Beautiful & consistent icon library
+- **Axios 1.6.2**: HTTP client for API communication
+- **Recharts 2.10.3**: Composable charting library for data visualization
+- **Lucide React 0.294.0**: Beautiful & consistent icon library
 - **React Hot Toast 2.4.1**: Toast notifications for user feedback
 
 ### ⚙️ **Backend**
 - **Node.js 20.x**: JavaScript runtime for server-side development
-- **Express.js 4.21.1**: Fast, unopinionated web framework
-- **MongoDB 8.7.0**: NoSQL database for flexible data storage
-- **Mongoose 8.8.0**: Elegant MongoDB object modeling for Node.js
+- **Express.js 4.18.2**: Fast, unopinionated web framework
+- **MongoDB 8.19.1**: NoSQL database for flexible data storage
+- **Mongoose 8.19.1**: Elegant MongoDB object modeling for Node.js
 - **JWT (jsonwebtoken 9.0.2)**: Secure token-based authentication
 - **bcryptjs 2.4.3**: Password hashing for security
-- **Helmet.js 8.0.0**: Security middleware for Express applications
+- **Helmet.js 7.1.0**: Security middleware for Express applications
 - **CORS 2.8.5**: Cross-origin resource sharing configuration
+- **Express Rate Limit 7.1.5**: API rate limiting
 
 ### 🤖 **AI & External Services**
 - **OpenRouter API**: Advanced AI models for mathematical problem solving
-- **Multiple AI Models**: Access to GPT-4, Claude, Gemini, and other models
-- **Intelligent Routing**: Automatic model selection based on problem complexity
+- **Intelligent Model Selection**: Configurable model selection via environment variables
 
 ### 🛡️ **Security & Performance**
 - **Helmet.js**: Security headers and XSS protection
@@ -191,6 +193,7 @@
 1. **Create Account**: Click "Sign Up" to create a new account with email and password
 2. **Login**: Use your credentials to log into the application
 3. **Access Solver**: Once authenticated, you can access the math solver
+4. **Navigation**: Click the MathMagic logo in the header to return to the home page at any time
 
 ### Solving Math Problems
 
@@ -266,8 +269,6 @@ See [SECURITY.md](SECURITY.md) for detailed security information and best practi
 
 ## 🏗️ Project Structure
 
-## 🏗️ Project Structure
-
 ```
 mathmagic/
 ├── backend/                          # Express.js API server
@@ -294,6 +295,7 @@ mathmagic/
 │   │   │   ├── ConfirmationModal.jsx # Confirmation dialogs
 │   │   │   ├── GraphVisualizer.jsx  # Chart component
 │   │   │   ├── MathSolver.jsx       # Main solver component
+│   │   │   ├── Profile.jsx          # User profile management
 │   │   │   └── StepAccordion.jsx    # Step display component
 │   │   ├── contexts/
 │   │   │   └── AuthContext.jsx      # Authentication context
@@ -357,7 +359,7 @@ RATE_LIMIT_MAX_REQUESTS=100
 ```
 
 #### User Login
-**Endpoint**: `POST /api/auth/login`
+**Endpoint**: `POST /api/auth/signin`
 
 **Request Body**:
 ```json
@@ -375,7 +377,111 @@ RATE_LIMIT_MAX_REQUESTS=100
   "token": "jwt_token_here",
   "user": {
     "id": "user_id",
-    "email": "user@example.com"
+    "email": "user@example.com",
+    "name": "User Name"
+  }
+}
+```
+
+#### Get User Profile
+**Endpoint**: `GET /api/auth/profile`
+
+**Headers**:
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "user_id",
+      "email": "user@example.com",
+      "name": "User Name",
+      "calculations": [...]
+    }
+  }
+}
+```
+
+#### Update User Profile
+**Endpoint**: `PUT /api/auth/profile`
+
+**Headers**:
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request Body**:
+```json
+{
+  "name": "New Name",
+  "email": "newemail@example.com"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "user_id",
+      "email": "newemail@example.com",
+      "name": "New Name"
+    }
+  }
+}
+```
+
+#### Change Password
+**Endpoint**: `PUT /api/auth/change-password`
+
+**Headers**:
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Request Body**:
+```json
+{
+  "currentPassword": "oldpassword123",
+  "newPassword": "newpassword123"
+}
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "message": "Password changed successfully"
+}
+```
+
+#### Get Calculation History
+**Endpoint**: `GET /api/auth/history`
+
+**Headers**:
+```
+Authorization: Bearer jwt_token_here
+```
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "calculations": [
+      {
+        "id": "calc_id",
+        "question": "Solve x² - 4 = 0",
+        "createdAt": "2023-10-01T12:00:00.000Z",
+        "provider": "openrouter",
+        "modelName": "nvidia/nemotron-nano-9b-v2:free"
+      }
+    ]
   }
 }
 ```
@@ -653,9 +759,9 @@ cd backend && node -e "require('mongoose').connect(process.env.MONGODB_URI).then
 
 *Empowering students and educators worldwide with AI-powered mathematics*
 
-[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=flat&logo=react)](https://reactjs.org/)
+[![React](https://img.shields.io/badge/React-18.2.0-61DAFB?style=flat&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat&logo=node.js)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-8.7.0-47A248?style=flat&logo=mongodb)](https://mongodb.com/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4.14-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-8.19.1-47A248?style=flat&logo=mongodb)](https://mongodb.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3.6-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
 
 </div>
