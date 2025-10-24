@@ -23,6 +23,14 @@
 - **Statistics & Probability**: Distributions, hypothesis testing, permutations
 - **Arithmetic**: All basic operations, fractions, decimals, percentages
 
+### 📸 **Smart Image Processing**
+- **OCR Integration**: Upload images of handwritten or printed math problems
+- **OCR.Space API**: Advanced optical character recognition for text extraction
+- **Image Cropping**: Interactive crop tool to focus on specific equations
+- **Multi-format Support**: JPG, PNG, and other common image formats
+- **Smart Preprocessing**: Automatic image optimization before OCR processing
+- **Dual Input Methods**: Choose between text typing or image upload
+
 ### 🎨 **Modern Animated Interface**
 - **Dark Glassmorphism Theme**: Beautiful, eye-friendly dark interface with glass effects
 - **Animated Background**: Floating geometric shapes (circle, square, rectangle, trapezium) with glowing effects
@@ -80,6 +88,8 @@
 - **Recharts 2.10.3**: Composable charting library for data visualization
 - **Lucide React 0.294.0**: Beautiful & consistent icon library
 - **React Hot Toast 2.4.1**: Toast notifications for user feedback
+- **React Image Crop 10.1.8**: Interactive image cropping component
+- **FormData API**: Native browser API for multipart form data handling
 
 ### ⚙️ **Backend**
 - **Node.js 20.x**: JavaScript runtime for server-side development
@@ -91,9 +101,12 @@
 - **Helmet.js 7.1.0**: Security middleware for Express applications
 - **CORS 2.8.5**: Cross-origin resource sharing configuration
 - **Express Rate Limit 7.1.5**: API rate limiting
+- **Multer 1.4.5**: Middleware for handling multipart/form-data (file uploads)
+- **Form-Data 4.0.0**: Programmatic form data creation for OCR API calls
 
 ### 🤖 **AI & External Services**
 - **OpenRouter API**: Advanced AI models for mathematical problem solving
+- **OCR.Space API**: Optical character recognition for image-to-text conversion
 - **Intelligent Model Selection**: Configurable model selection via environment variables
 
 ### 🛡️ **Security & Performance**
@@ -118,6 +131,7 @@
 - **npm** 10.x or higher (comes with Node.js)
 - **MongoDB** (local installation or MongoDB Atlas account)
 - **OpenRouter API Key** (get from [openrouter.ai](https://openrouter.ai))
+- **OCR.Space API Key** (get from [ocr.space](https://ocr.space/OCRAPI))
 - **Git** for cloning the repository
 
 ### Installation
@@ -167,7 +181,9 @@
    # OR for MongoDB Atlas:
    # MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/mathmagic_dev
    JWT_SECRET=your_super_secure_jwt_secret_here
-   OPENROUTER_API_KEY=your_openrouter_api_key_here
+   API_KEY=your_openrouter_api_key_here
+   MODEL_NAME=nvidia/nemotron-nano-9b-v2:free
+   OCR_SPACE_API_KEY=your_ocr_space_api_key_here
    FRONTEND_URL=http://localhost:5173
    ```
 
@@ -197,11 +213,24 @@
 
 ### Solving Math Problems
 
-1. **Enter Your Question**: Type any math problem in the text area
-2. **Submit**: Click "Solve Problem" or press Enter
-3. **View Solution**: Expand steps to see detailed explanations with formulas
-4. **View Graphs**: If applicable, graphs will appear automatically
-5. **Clear**: Use "Clear All" to reset the interface
+1. **Choose Input Method**: Toggle between "Text Input" and "Image Upload" modes
+2. **Text Input**: Type any math problem directly in the text area
+3. **Image Upload**: 
+   - Click "Choose Image" to select a photo of your math problem
+   - Optionally crop the image to focus on the specific equation
+   - Supported formats: JPG, PNG (max 10MB)
+4. **Submit**: Click "Solve Problem" or press Enter
+5. **View Solution**: Expand steps to see detailed explanations with formulas
+6. **View Graphs**: If applicable, graphs will appear automatically
+7. **Clear**: Use "Clear All" to reset the interface
+
+### Image Upload Features
+
+- **OCR Processing**: Automatically extracts text from uploaded images
+- **Smart Cropping**: Interactive crop tool to isolate specific equations
+- **Multi-language Support**: OCR supports various languages and mathematical symbols
+- **Quality Optimization**: Images are processed for optimal OCR accuracy
+- **Fallback Handling**: If OCR fails, you'll receive clear error messages
 
 ### Calculation History
 
@@ -279,12 +308,12 @@ mathmagic/
 │   │   └── Calculation.js           # Calculation history model
 │   ├── routes/
 │   │   ├── auth.js                  # Authentication endpoints
-│   │   └── solve.js                 # Math solving endpoint
+│   │   └── solve.js                 # Math solving endpoint with OCR
 │   ├── services/
-│   │   └── aiService.js             # AI integration logic
+│   │   └── aiService.js             # AI integration and OCR logic
 │   ├── server.js                    # Main server file
 │   ├── package.json
-│   └── .env                         # Environment variables
+│   └── .env                         # Environment variables (OCR API key)
 ├── frontend/                         # React application
 │   ├── public/                      # Static assets
 │   ├── src/
@@ -294,7 +323,7 @@ mathmagic/
 │   │   │   │   └── Signup.jsx       # User registration component
 │   │   │   ├── ConfirmationModal.jsx # Confirmation dialogs
 │   │   │   ├── GraphVisualizer.jsx  # Chart component
-│   │   │   ├── MathSolver.jsx       # Main solver component
+│   │   │   ├── MathSolver.jsx       # Main solver with image upload
 │   │   │   ├── Profile.jsx          # User profile management
 │   │   │   └── StepAccordion.jsx    # Step display component
 │   │   ├── contexts/
@@ -304,7 +333,7 @@ mathmagic/
 │   │   ├── index.css                # Global styles with animations
 │   │   └── main.jsx                 # React entry point
 │   ├── eslint.config.js             # ESLint configuration
-│   ├── package.json
+│   ├── package.json                 # Includes react-image-crop
 │   ├── postcss.config.js            # PostCSS configuration
 │   ├── tailwind.config.js           # Tailwind CSS configuration
 │   └── vite.config.js               # Vite configuration
@@ -319,12 +348,28 @@ Currently configured for **OpenRouter** with these models:
 - `nvidia/nemotron-nano-9b-v2:free` (default)
 - Access to 100+ models via OpenRouter
 
+### OCR Configuration
+**OCR.Space API** provides optical character recognition:
+- Free tier: 25,000 requests/month
+- Supports 25+ languages including mathematical symbols
+- Processes JPG, PNG, GIF, PDF, and TIFF formats
+- Maximum file size: 1MB (automatically compressed)
+
 ### Environment Variables
 ```env
 # Backend Configuration
 PORT=5000
-OPENROUTER_API_KEY=your_api_key
+API_KEY=your_openrouter_api_key
+MODEL_NAME=nvidia/nemotron-nano-9b-v2:free
+OCR_SPACE_API_KEY=your_ocr_space_api_key
 NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/mathmagic_dev
+
+# Security
+JWT_SECRET=your_super_secure_jwt_secret_here
+FRONTEND_URL=http://localhost:5173
 
 # Optional: Rate Limiting
 RATE_LIMIT_WINDOW=15
@@ -488,37 +533,49 @@ Authorization: Bearer jwt_token_here
 
 ### Math Solving Endpoint
 
-#### Solve Math Problem
+#### Solve Math Problem (Text Input)
 **Endpoint**: `POST /api/solve`
 
 **Headers**:
 ```
 Authorization: Bearer jwt_token_here
+Content-Type: application/json
 ```
 
 **Request Body**:
 ```json
 {
-  "question": "Solve x² - 4 = 0",
-  "provider": "openrouter",
-  "modelName": "nvidia/nemotron-nano-9b-v2:free"
+  "problem": "Solve x² - 4 = 0",
+  "model": "nvidia/nemotron-nano-9b-v2:free"
 }
 ```
 
-**Response**:
+#### Solve Math Problem (Image Upload)
+**Endpoint**: `POST /api/solve`
+
+**Headers**:
+```
+Authorization: Bearer jwt_token_here
+Content-Type: multipart/form-data
+```
+
+**Request Body** (Form Data):
+```
+image: [File] - Cropped image file containing math problem (JPG, PNG, max 10MB)
+model: "nvidia/nemotron-nano-9b-v2:free"
+```
+
+**OCR Processing**: Images are automatically processed using OCR.Space API to extract mathematical text before solving.
+
+**Response** (Both methods):
 ```json
 {
   "success": true,
-  "data": {
-    "topic": "Algebra",
-    "finalAnswer": "x = 2 or x = -2",
+  "result": {
+    "solution": "x = 2 or x = -2",
     "steps": [
-      {
-        "title": "Step 1: Understanding the equation",
-        "explanation": "This is a quadratic equation in the form ax² + bx + c = 0",
-        "formula": "ax² + bx + c = 0",
-        "calculation": "1x² + 0x - 4 = 0"
-      }
+      "Add 4 to both sides: x² = 4",
+      "Take square root of both sides: x = ±2"
     ],
     "graphData": null
   }
@@ -633,6 +690,7 @@ This application is designed to be deployed with the frontend on Vercel and the 
    - `AI_PROVIDER`: `openrouter`
    - `API_KEY`: Your OpenRouter API key
    - `MODEL_NAME`: `nvidia/nemotron-nano-9b-v2:free` (or your preferred model)
+   - `OCR_SPACE_API_KEY`: Your OCR.Space API key
    - `FRONTEND_URL`: Your Vercel frontend URL (e.g., `https://your-app.vercel.app`)
 
 3. **Database Setup**:
@@ -656,6 +714,7 @@ JWT_SECRET=your_super_secure_jwt_secret_here
 AI_PROVIDER=openrouter
 API_KEY=your_openrouter_api_key
 MODEL_NAME=nvidia/nemotron-nano-9b-v2:free
+OCR_SPACE_API_KEY=your_ocr_space_api_key
 ```
 
 #### Frontend (.env)
@@ -667,6 +726,7 @@ VITE_BACKEND_URL=https://your-render-backend.onrender.com
 
 - [ ] MongoDB Atlas database created and connection string obtained
 - [ ] OpenRouter API key obtained
+- [ ] OCR.Space API key obtained
 - [ ] JWT secret generated (use a strong random string)
 - [ ] Frontend deployed on Vercel
 - [ ] Backend deployed on Render
@@ -674,6 +734,7 @@ VITE_BACKEND_URL=https://your-render-backend.onrender.com
 - [ ] CORS origin updated in backend with Vercel URL
 - [ ] Frontend VITE_BACKEND_URL updated with Render URL
 - [ ] Test authentication and math solving functionality
+- [ ] Test image upload and OCR functionality
 
 ## 🤝 Contributing
 
@@ -735,6 +796,20 @@ cd backend && node -e "require('mongoose').connect(process.env.MONGODB_URI).then
 - Verify your OpenRouter API key is valid
 - Check `.env` file configuration
 - Ensure key has sufficient credits/quota
+- For OCR: Verify OCR_SPACE_API_KEY is set correctly
+
+**Image Upload Problems**
+- Check file size (max 10MB)
+- Supported formats: JPG, PNG
+- Ensure OCR_SPACE_API_KEY has quota remaining
+- Try different image quality/resolution
+- Check network connectivity for OCR API calls
+
+**OCR Processing Errors**
+- Ensure image contains clear, readable text
+- Try cropping to focus on the equation only
+- Check OCR.Space API status and quota
+- Verify image is not rotated or skewed
 
 **Graph not displaying**
 - Include graphing keywords: "graph", "plot", "draw", "show"

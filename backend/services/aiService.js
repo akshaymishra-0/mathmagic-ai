@@ -1,4 +1,5 @@
 import axios from "axios";
+import FormData from "form-data";
 import { getProvider } from "../config/aiProviders.js";
 
 export class AIService {
@@ -328,6 +329,49 @@ export class AIService {
     return obj;
   }
 }
+
+// OCR Service for image processing
+export const processImageWithOCR = async (imageBuffer, apiKey) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', imageBuffer, {
+      filename: 'image.jpg',
+      contentType: 'image/jpeg'
+    });
+    formData.append('language', 'eng');
+    formData.append('isOverlayRequired', 'false');
+    formData.append('iscreatesearchablepdf', 'false');
+    formData.append('issearchablepdfhidetextlayer', 'false');
+
+    const response = await axios.post('https://api.ocr.space/parse/image', formData, {
+      headers: {
+        ...formData.getHeaders(),
+        'apikey': apiKey,
+      },
+      maxContentLength: Infinity,
+      maxBodyLength: Infinity,
+    });
+
+    if (response.data.IsErroredOnProcessing) {
+      throw new Error(response.data.ErrorMessage || 'OCR processing failed');
+    }
+
+    // Extract text from all parsed results
+    const extractedText = response.data.ParsedResults
+      .map(result => result.ParsedText)
+      .join(' ')
+      .trim();
+
+    if (!extractedText) {
+      throw new Error('No text could be extracted from the image');
+    }
+
+    return extractedText;
+  } catch (error) {
+    console.error('OCR Error:', error);
+    throw new Error(`OCR processing failed: ${error.message}`);
+  }
+};
 
 export const createAIService = (provider, apiKey, modelName) => {
   return new AIService(provider, apiKey, modelName);

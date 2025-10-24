@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 import {
   Send,
   Loader2,
@@ -10,6 +12,10 @@ import {
   TrendingUp,
   Calculator,
   RotateCcw,
+  Upload,
+  Crop,
+  X,
+  Image as ImageIcon,
 } from "lucide-react";
 import StepAccordion from "./StepAccordion";
 import GraphVisualizer from "./GraphVisualizer";
@@ -27,6 +33,22 @@ const MathSolver = ({ apiConfig }) => {
   const [loading, setLoading] = useState(false);
   const [solution, setSolution] = useState(null);
 
+  // Image upload states
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [crop, setCrop] = useState({
+    unit: '%',
+    x: 25,
+    y: 25,
+    width: 50,
+    height: 50
+  });
+  const [completedCrop, setCompletedCrop] = useState(null);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [inputMode, setInputMode] = useState('text'); // 'text' or 'image'
+  const imgRef = useRef(null);
+  const fileInputRef = useRef(null);
+
   // Check for question from navigation state (from history)
   useEffect(() => {
     if (location.state?.question) {
@@ -39,8 +61,13 @@ const MathSolver = ({ apiConfig }) => {
   const handleSolve = async (e) => {
     e.preventDefault();
 
-    if (!question.trim()) {
+    if (inputMode === 'text' && !question.trim()) {
       toast.error("Please enter a math question");
+      return;
+    }
+
+    if (inputMode === 'image' && !selectedImage) {
+      toast.error("Please upload an image");
       return;
     }
 
@@ -48,10 +75,32 @@ const MathSolver = ({ apiConfig }) => {
     setSolution(null);
 
     try {
-      const response = await axios.post("/api/solve", {
-        question: question.trim(),
-        provider: apiConfig.provider,
-        modelName: apiConfig.modelName,
+      let formData = new FormData();
+
+      if (inputMode === 'image') {
+        // Get the cropped image blob
+        const croppedBlob = await getCroppedImg();
+        if (croppedBlob) {
+          formData.append('image', croppedBlob, 'cropped-image.jpg');
+        } else {
+          // If no crop applied, use the original image
+          const response = await fetch(selectedImage);
+          const blob = await response.blob();
+          formData.append('image', blob, 'image.jpg');
+        }
+      } else {
+        formData.append('question', question.trim());
+      }
+
+      formData.append('provider', apiConfig.provider);
+      if (apiConfig.modelName) {
+        formData.append('modelName', apiConfig.modelName);
+      }
+
+      const response = await axios.post("/api/solve", formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response.data.success) {
@@ -77,6 +126,126 @@ const MathSolver = ({ apiConfig }) => {
     setQuestion("");
     setSolution(null);
     setLoading(false);
+    setSelectedImage(null);
+    setImagePreview(null);
+    setCompletedCrop(null);
+    setInputMode('text');
+  };
+
+  // Image handling functions
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast.error("Image size must be less than 10MB");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        setSelectedImage(reader.result);
+        setImagePreview(reader.result);
+        // Reset crop to default values for new image
+        setCrop({
+          unit: '%',
+          x: 25,
+          y: 25,
+          width: 50,
+          height: 50
+        });
+        setCompletedCrop(null);
+        setShowCropModal(true);
+        setInputMode('image');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCropComplete = (crop) => {
+    setCompletedCrop(crop);
+  };
+
+  const applyCrop = () => {
+    if (!completedCrop || !imgRef.current || !completedCrop.width || !completedCrop.height) {
+      toast.error("Please select a crop area first");
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = imgRef.current;
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height
+    );
+
+    canvas.toBlob((blob) => {
+      if (blob) {
+        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
+        setSelectedImage(URL.createObjectURL(blob));
+        setImagePreview(URL.createObjectURL(blob));
+        setShowCropModal(false);
+        toast.success("Image cropped successfully!");
+      }
+    }, 'image/jpeg', 0.95);
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setCompletedCrop(null);
+    setInputMode('text');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const getCroppedImg = () => {
+    if (!completedCrop || !imgRef.current || !completedCrop.width || !completedCrop.height) {
+      return null;
+    }
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const image = imgRef.current;
+
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+
+    canvas.width = completedCrop.width;
+    canvas.height = completedCrop.height;
+
+    ctx.drawImage(
+      image,
+      completedCrop.x * scaleX,
+      completedCrop.y * scaleY,
+      completedCrop.width * scaleX,
+      completedCrop.height * scaleY,
+      0,
+      0,
+      completedCrop.width,
+      completedCrop.height
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, 'image/jpeg', 0.95);
+    });
   };
 
   const getTopicColor = (topic) => {
@@ -100,21 +269,152 @@ const MathSolver = ({ apiConfig }) => {
           <h2 className="text-xl font-semibold">Ask Your Question</h2>
         </div>
 
+        {/* Input Mode Toggle */}
+        <div className="flex items-center p-1 bg-dark-hover rounded-xl border border-dark-border mb-6">
+          <button
+            onClick={() => setInputMode('text')}
+            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
+              inputMode === 'text'
+                ? 'bg-gradient-to-r from-accent-purple to-accent-blue text-white shadow-lg'
+                : 'text-gray-400 hover:text-white hover:bg-dark-border/50'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>Text</span>
+          </button>
+          <button
+            onClick={() => setInputMode('image')}
+            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
+              inputMode === 'image'
+                ? 'bg-gradient-to-r from-accent-purple to-accent-blue text-white shadow-lg'
+                : 'text-gray-400 hover:text-white hover:bg-dark-border/50'
+            }`}
+          >
+            <ImageIcon className="w-4 h-4" />
+            <span>Image</span>
+          </button>
+        </div>
+
         <form onSubmit={handleSolve} className="space-y-4">
-          <div>
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              placeholder="Enter any math problem..."
-              rows="4"
-              className="input-dark w-full rounded-xl p-4 resize-none"
-              disabled={loading}
-            />
-          </div>
+          {inputMode === 'text' ? (
+            <div>
+              <textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="Enter any math problem..."
+                className="input-dark w-full rounded-xl p-4 resize-none h-32 md:h-40 lg:h-48"
+                disabled={loading}
+              />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {!selectedImage ? (
+                <div className="glass-effect rounded-2xl p-8 md:p-12 text-center border-2 border-dashed border-dark-border hover:border-accent-purple/50 hover:shadow-lg hover:shadow-accent-purple/10 transition-all duration-300">
+                  <div className="inline-block p-4 bg-gradient-to-br from-accent-purple/20 to-accent-blue/20 rounded-full mb-6">
+                    <Upload className="w-12 h-12 text-accent-purple" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
+                    Upload Math Problem
+                  </h3>
+                  <p className="text-gray-400 mb-6 max-w-md mx-auto">
+                    Take a photo or upload an image of your math problem
+                  </p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    id="image-upload"
+                  />
+                  <label
+                    htmlFor="image-upload"
+                    className="btn-primary px-6 py-3 md:px-8 md:py-4 rounded-xl text-base font-semibold cursor-pointer inline-flex items-center space-x-2 hover:shadow-xl hover:shadow-accent-purple/30 transition-all duration-200"
+                  >
+                    <Upload className="w-5 h-5" />
+                    <span>Choose Image</span>
+                  </label>
+                  <p className="text-xs text-gray-500 mt-4">Supports JPG, PNG • Max 10MB</p>
+                </div>
+              ) : (
+                <div className="glass-effect rounded-2xl p-6 border border-dark-border">
+                  <div className="relative group">
+                    <img
+                      src={imagePreview}
+                      alt="Selected math problem"
+                      className="w-full max-h-80 object-contain rounded-xl border border-dark-border"
+                    />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
+                      <div className="flex space-x-3">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCrop({
+                              unit: '%',
+                              x: 25,
+                              y: 25,
+                              width: 50,
+                              height: 50
+                            });
+                            setCompletedCrop(null);
+                            setShowCropModal(true);
+                          }}
+                          className="bg-accent-purple/90 hover:bg-accent-purple text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 hover:shadow-lg"
+                        >
+                          <Crop className="w-4 h-4" />
+                          <span>Crop</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={removeImage}
+                          className="bg-red-600/90 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 hover:shadow-lg"
+                        >
+                          <X className="w-4 h-4" />
+                          <span>Remove</span>
+                        </button>
+                      </div>
+                    </div>
+                    {/* Corner buttons for mobile/small screens */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCrop({
+                          unit: '%',
+                          x: 25,
+                          y: 25,
+                          width: 50,
+                          height: 50
+                        });
+                        setCompletedCrop(null);
+                        setShowCropModal(true);
+                      }}
+                      className="absolute top-3 left-3 bg-accent-purple hover:bg-accent-purple/90 text-white p-2 rounded-full shadow-lg md:hidden"
+                      title="Crop image"
+                    >
+                      <Crop className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-3 right-3 bg-red-600 hover:bg-red-600/90 text-white p-2 rounded-full shadow-lg md:hidden"
+                      title="Remove image"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="mt-4 text-center">
+                    <p className="text-sm text-gray-400">
+                      Image uploaded successfully!
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <button
             type="submit"
-            disabled={loading || !question.trim()}
+            disabled={loading || (inputMode === 'text' && !question.trim()) || (inputMode === 'image' && !selectedImage)}
             className="btn-primary w-full py-2 md:py-3 rounded-xl flex items-center justify-center space-x-2"
           >
             {loading ? (
@@ -133,7 +433,7 @@ const MathSolver = ({ apiConfig }) => {
           <button
             type="button"
             onClick={clearAll}
-            disabled={loading || (!question.trim() && !solution)}
+            disabled={loading || (!question.trim() && !selectedImage && !solution)}
             className="btn-secondary w-full py-2 md:py-3 rounded-xl flex items-center justify-center space-x-2 mt-3"
           >
             <RotateCcw className="w-5 h-5" />
@@ -142,24 +442,26 @@ const MathSolver = ({ apiConfig }) => {
         </form>
 
         {/* Example Questions */}
-        <div className="mt-6">
-          <div className="flex items-center space-x-2 mb-3">
-            <Lightbulb className="w-4 h-4 text-accent-orange" />
-            <p className="text-sm text-gray-400">Try these examples:</p>
+        {inputMode === 'text' && (
+          <div className="mt-6">
+            <div className="flex items-center space-x-2 mb-3">
+              <Lightbulb className="w-4 h-4 text-accent-orange" />
+              <p className="text-sm text-gray-400">Try these examples:</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {EXAMPLE_QUESTIONS.map((example, index) => (
+                <button
+                  key={index}
+                  onClick={() => loadExample(example)}
+                  className="btn-secondary px-3 py-1.5 rounded-lg text-xs"
+                  disabled={loading}
+                >
+                  {example}
+                </button>
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {EXAMPLE_QUESTIONS.map((example, index) => (
-              <button
-                key={index}
-                onClick={() => loadExample(example)}
-                className="btn-secondary px-3 py-1.5 rounded-lg text-xs"
-                disabled={loading}
-              >
-                {example}
-              </button>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Loading State */}
@@ -171,7 +473,7 @@ const MathSolver = ({ apiConfig }) => {
           <h3 className="text-xl font-semibold mb-2">
             Analyzing your problem...
           </h3>
-          <p className="text-gray-400">Our AI is working on the solution</p>
+          <p className="text-gray-400">Working on the solution</p>
         </div>
       )}
 
@@ -229,6 +531,77 @@ const MathSolver = ({ apiConfig }) => {
           <p className="text-gray-400">
             Enter a question above or try one of the examples
           </p>
+        </div>
+      )}
+
+      {/* Crop Modal */}
+      {showCropModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="glass-effect rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-dark-border shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-accent-purple/20 rounded-lg">
+                  <Crop className="w-6 h-6 text-accent-purple" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
+                    Crop Your Image
+                  </h3>
+                  <p className="text-sm text-gray-400">Select the area containing your math problem</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowCropModal(false)}
+                className="p-2 hover:bg-dark-hover rounded-lg transition-colors text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="mb-6">
+              {imagePreview && (
+                <div className="bg-dark-hover rounded-xl p-4 border border-dark-border">
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(c) => setCrop(c)}
+                    onComplete={handleCropComplete}
+                    className="rounded-lg overflow-hidden"
+                  >
+                    <img
+                      ref={imgRef}
+                      src={imagePreview}
+                      alt="Crop preview"
+                      className="max-w-full max-h-96 object-contain rounded-lg"
+                      onLoad={() => {
+                        // Reset crop when image loads to ensure proper dimensions
+                        setCrop({
+                          unit: '%',
+                          x: 25,
+                          y: 25,
+                          width: 50,
+                          height: 50
+                        });
+                      }}
+                    />
+                  </ReactCrop>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowCropModal(false)}
+                className="btn-secondary px-6 py-2.5 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={applyCrop}
+                className="btn-primary px-6 py-2.5 rounded-lg flex items-center space-x-2"
+              >
+                <Crop className="w-4 h-4" />
+                <span>Apply Crop</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

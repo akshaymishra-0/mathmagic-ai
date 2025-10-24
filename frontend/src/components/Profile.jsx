@@ -183,7 +183,7 @@ const Profile = () => {
                     className="flex-1 px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-purple focus:outline-none"
                     placeholder="Enter your full name"
                   />
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-row gap-2">
                     <button
                       onClick={() => handleSave("name")}
                       className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all shadow-lg hover:shadow-xl"
@@ -240,7 +240,7 @@ const Profile = () => {
                     className="flex-1 px-4 py-2 bg-dark-hover border border-dark-border rounded-lg text-white focus:border-accent-blue focus:outline-none"
                     placeholder="Enter your email"
                   />
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-row gap-2">
                     <button
                       onClick={() => handleSave("email")}
                       className="px-3 py-1.5 sm:px-4 sm:py-2 text-sm sm:text-base bg-gradient-to-r from-accent-purple to-accent-blue text-white rounded-lg hover:from-accent-purple/90 hover:to-accent-blue/90 transition-all shadow-lg hover:shadow-xl"
