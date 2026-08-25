@@ -1,3 +1,4 @@
+// OpenRouter — OpenAI-compatible, used via Authorization header
 export const aiProviders = {
   openrouter: {
     name: "OpenRouter",
@@ -6,14 +7,19 @@ export const aiProviders = {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
       "HTTP-Referer": "http://localhost:5173",
-      "X-Title": "Math Solver App",
+      "X-Title": "MathMagic",
     }),
     formatRequest: (model, messages) => ({
-      model: model,
-      messages: messages,
+      model,
+      messages,
       temperature: 0.3,
-      max_tokens: 4000,
+      max_tokens: 8192,
     }),
+  },
+
+  // Google Gemini — different URL/request format, handled separately in AIService
+  gemini: {
+    name: "Google Gemini",
   },
 };
 
@@ -21,9 +27,7 @@ export const getProvider = (providerName) => {
   const provider = aiProviders[providerName?.toLowerCase()];
   if (!provider) {
     throw new Error(
-      `AI Provider "${providerName}" not found. Available: ${Object.keys(
-        aiProviders
-      ).join(", ")}`
+      `AI Provider "${providerName}" not found. Available: ${Object.keys(aiProviders).join(", ")}`
     );
   }
   return provider;

@@ -9,33 +9,31 @@ import authRoute from "./routes/auth.js";
 
 dotenv.config();
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/mathmagic", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI || "mongodb://localhost:27017/mathmagic")
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// Security
 app.use(helmet());
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? [process.env.FRONTEND_URL || "https://your-vercel-app.vercel.app"]
-        : ["http://localhost:5173", "http://localhost:3000"],
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "http://localhost:5173",
+      "http://localhost:3000",
+    ],
   })
 );
 
-// Rate limiting
+// Rate limiting — 100 requests per 15 minutes per IP
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,
   message: "Too many requests from this IP, please try again later.",
 });
 
@@ -43,7 +41,7 @@ app.use(limiter);
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// Health check
+// Health check endpoint
 app.get("/health", (req, res) => {
   res.json({
     status: "OK",
@@ -53,24 +51,18 @@ app.get("/health", (req, res) => {
   });
 });
 
-// API routes
+// Routes
 app.use("/api/solve", solveRoute);
 app.use("/api/auth", authRoute);
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    error: "Internal server error",
-  });
+  res.status(500).json({ success: false, error: "Internal server error" });
 });
 
 app.listen(PORT, () => {
-  console.log(`
-Math Solver API Server
-Running on: http://localhost:${PORT}
-AI Provider: ${process.env.AI_PROVIDER?.toUpperCase().padEnd(24)}
-Model: ${(process.env.MODEL_NAME || "default").padEnd(32)}
-  `);
+  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`AI Provider: ${process.env.AI_PROVIDER}`);
+  console.log(`Model: ${process.env.MODEL_NAME}`);
 });

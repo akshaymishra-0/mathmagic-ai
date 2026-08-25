@@ -2,21 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
-import ReactCrop from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
-import {
-  Send,
-  Loader2,
-  BookOpen,
-  Lightbulb,
-  TrendingUp,
-  Calculator,
-  RotateCcw,
-  Upload,
-  Crop,
-  X,
-  Image as ImageIcon,
-} from "lucide-react";
+import ReactCrop from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
+import { Send, Loader2, Upload, Crop, X, Image as ImageIcon } from "lucide-react";
 import StepAccordion from "./StepAccordion";
 import GraphVisualizer from "./GraphVisualizer";
 
@@ -27,33 +15,26 @@ const EXAMPLE_QUESTIONS = [
   "Solve the system: 2x + y = 7 and x - y = 2",
 ];
 
-const MathSolver = ({ apiConfig }) => {
+const MathSolver = () => {
   const location = useLocation();
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [solution, setSolution] = useState(null);
+  const [inputMode, setInputMode] = useState("text"); // 'text' or 'image'
 
   // Image upload states
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [crop, setCrop] = useState({
-    unit: '%',
-    x: 25,
-    y: 25,
-    width: 50,
-    height: 50
-  });
+  const [crop, setCrop] = useState({ unit: "%", x: 25, y: 25, width: 50, height: 50 });
   const [completedCrop, setCompletedCrop] = useState(null);
   const [showCropModal, setShowCropModal] = useState(false);
-  const [inputMode, setInputMode] = useState('text'); // 'text' or 'image'
   const imgRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Check for question from navigation state (from history)
+  // If coming from history, pre-fill the question
   useEffect(() => {
     if (location.state?.question) {
       setQuestion(location.state.question);
-      // Clear the navigation state to prevent re-triggering
       window.history.replaceState({}, document.title);
     }
   }, [location.state]);
@@ -61,12 +42,12 @@ const MathSolver = ({ apiConfig }) => {
   const handleSolve = async (e) => {
     e.preventDefault();
 
-    if (inputMode === 'text' && !question.trim()) {
+    if (inputMode === "text" && !question.trim()) {
       toast.error("Please enter a math question");
       return;
     }
 
-    if (inputMode === 'image' && !selectedImage) {
+    if (inputMode === "image" && !selectedImage) {
       toast.error("Please upload an image");
       return;
     }
@@ -75,42 +56,32 @@ const MathSolver = ({ apiConfig }) => {
     setSolution(null);
 
     try {
-      let formData = new FormData();
+      const formData = new FormData();
 
-      if (inputMode === 'image') {
-        // Get the cropped image blob
+      if (inputMode === "image") {
         const croppedBlob = await getCroppedImg();
         if (croppedBlob) {
-          formData.append('image', croppedBlob, 'cropped-image.jpg');
+          formData.append("image", croppedBlob, "cropped-image.jpg");
         } else {
-          // If no crop applied, use the original image
-          const response = await fetch(selectedImage);
-          const blob = await response.blob();
-          formData.append('image', blob, 'image.jpg');
+          const res = await fetch(selectedImage);
+          const blob = await res.blob();
+          formData.append("image", blob, "image.jpg");
         }
       } else {
-        formData.append('question', question.trim());
-      }
-
-      formData.append('provider', apiConfig.provider);
-      if (apiConfig.modelName) {
-        formData.append('modelName', apiConfig.modelName);
+        formData.append("question", question.trim());
       }
 
       const response = await axios.post("/api/solve", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.data.success) {
         setSolution(response.data.data);
-        toast.success("Problem solved successfully!");
+        toast.success("Problem solved!");
       } else {
         throw new Error(response.data.error);
       }
     } catch (error) {
-      console.error("Error:", error);
       toast.error(error.response?.data?.error || "Failed to solve the problem");
     } finally {
       setLoading(false);
@@ -129,40 +100,28 @@ const MathSolver = ({ apiConfig }) => {
     setSelectedImage(null);
     setImagePreview(null);
     setCompletedCrop(null);
-    setInputMode('text');
+    setInputMode("text");
   };
 
-  // Image handling functions
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) { // 10MB limit
-        toast.error("Image size must be less than 10MB");
-        return;
-      }
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result);
-        setImagePreview(reader.result);
-        // Reset crop to default values for new image
-        setCrop({
-          unit: '%',
-          x: 25,
-          y: 25,
-          width: 50,
-          height: 50
-        });
-        setCompletedCrop(null);
-        setShowCropModal(true);
-        setInputMode('image');
-      };
-      reader.readAsDataURL(file);
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Image must be less than 10MB");
+      return;
     }
-  };
 
-  const handleCropComplete = (crop) => {
-    setCompletedCrop(crop);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setSelectedImage(reader.result);
+      setImagePreview(reader.result);
+      setCrop({ unit: "%", x: 25, y: 25, width: 50, height: 50 });
+      setCompletedCrop(null);
+      setShowCropModal(true);
+      setInputMode("image");
+    };
+    reader.readAsDataURL(file);
   };
 
   const applyCrop = () => {
@@ -171,10 +130,9 @@ const MathSolver = ({ apiConfig }) => {
       return;
     }
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
     const image = imgRef.current;
-
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
@@ -187,31 +145,27 @@ const MathSolver = ({ apiConfig }) => {
       completedCrop.y * scaleY,
       completedCrop.width * scaleX,
       completedCrop.height * scaleY,
-      0,
-      0,
+      0, 0,
       completedCrop.width,
       completedCrop.height
     );
 
     canvas.toBlob((blob) => {
       if (blob) {
-        const croppedFile = new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' });
         setSelectedImage(URL.createObjectURL(blob));
         setImagePreview(URL.createObjectURL(blob));
         setShowCropModal(false);
-        toast.success("Image cropped successfully!");
+        toast.success("Image cropped!");
       }
-    }, 'image/jpeg', 0.95);
+    }, "image/jpeg", 0.95);
   };
 
   const removeImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
     setCompletedCrop(null);
-    setInputMode('text');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    setInputMode("text");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const getCroppedImg = () => {
@@ -219,10 +173,9 @@ const MathSolver = ({ apiConfig }) => {
       return null;
     }
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
     const image = imgRef.current;
-
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
@@ -235,16 +188,13 @@ const MathSolver = ({ apiConfig }) => {
       completedCrop.y * scaleY,
       completedCrop.width * scaleX,
       completedCrop.height * scaleY,
-      0,
-      0,
+      0, 0,
       completedCrop.width,
       completedCrop.height
     );
 
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        resolve(blob);
-      }, 'image/jpeg', 0.95);
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.95);
     });
   };
 
@@ -263,62 +213,49 @@ const MathSolver = ({ apiConfig }) => {
   return (
     <div className="space-y-6 mb-8">
       {/* Input Section */}
-      <div className="glass-effect rounded-2xl p-4 md:p-6 shadow-2xl">
-        <div className="flex items-center space-x-2 mb-4">
-          <BookOpen className="w-5 h-5 text-accent-purple" />
-          <h2 className="text-xl font-semibold">Ask Your Question</h2>
-        </div>
+      <div className="glass-effect rounded-2xl p-4 md:p-6">
+        <h2 className="text-lg font-semibold mb-4">Ask Your Question</h2>
 
-        {/* Input Mode Toggle */}
-        <div className="flex items-center p-1 bg-dark-hover rounded-xl border border-dark-border mb-6">
+        {/* Text / Image toggle */}
+        <div className="flex items-center p-1 bg-dark-hover rounded-xl border border-dark-border mb-5">
           <button
-            onClick={() => setInputMode('text')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
-              inputMode === 'text'
-                ? 'bg-gradient-to-r from-accent-purple to-accent-blue text-white shadow-lg'
-                : 'text-gray-400 hover:text-white hover:bg-dark-border/50'
+            onClick={() => setInputMode("text")}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              inputMode === "text"
+                ? "bg-gradient-to-r from-accent-purple to-accent-blue text-white"
+                : "text-gray-400 hover:text-white"
             }`}
           >
-            <BookOpen className="w-4 h-4" />
-            <span>Text</span>
+            Text
           </button>
           <button
-            onClick={() => setInputMode('image')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center space-x-2 ${
-              inputMode === 'image'
-                ? 'bg-gradient-to-r from-accent-purple to-accent-blue text-white shadow-lg'
-                : 'text-gray-400 hover:text-white hover:bg-dark-border/50'
+            onClick={() => setInputMode("image")}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              inputMode === "image"
+                ? "bg-gradient-to-r from-accent-purple to-accent-blue text-white"
+                : "text-gray-400 hover:text-white"
             }`}
           >
             <ImageIcon className="w-4 h-4" />
-            <span>Image</span>
+            Image
           </button>
         </div>
 
         <form onSubmit={handleSolve} className="space-y-4">
-          {inputMode === 'text' ? (
-            <div>
-              <textarea
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Enter any math problem..."
-                className="input-dark w-full rounded-xl p-4 resize-none h-32 md:h-40 lg:h-48"
-                disabled={loading}
-              />
-            </div>
+          {inputMode === "text" ? (
+            <textarea
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Enter any math problem..."
+              className="input-dark w-full rounded-xl p-4 resize-none h-32 md:h-40"
+              disabled={loading}
+            />
           ) : (
-            <div className="space-y-4">
+            <div>
               {!selectedImage ? (
-                <div className="glass-effect rounded-2xl p-8 md:p-12 text-center border-2 border-dashed border-dark-border hover:border-accent-purple/50 hover:shadow-lg hover:shadow-accent-purple/10 transition-all duration-300">
-                  <div className="inline-block p-4 bg-gradient-to-br from-accent-purple/20 to-accent-blue/20 rounded-full mb-6">
-                    <Upload className="w-12 h-12 text-accent-purple" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-3 bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
-                    Upload Math Problem
-                  </h3>
-                  <p className="text-gray-400 mb-6 max-w-md mx-auto">
-                    Take a photo or upload an image of your math problem
-                  </p>
+                <div className="border-2 border-dashed border-dark-border rounded-xl p-10 text-center hover:border-accent-purple/50 transition-colors">
+                  <Upload className="w-10 h-10 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-400 mb-4">Upload an image of your math problem</p>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -329,83 +266,42 @@ const MathSolver = ({ apiConfig }) => {
                   />
                   <label
                     htmlFor="image-upload"
-                    className="btn-primary px-6 py-3 md:px-8 md:py-4 rounded-xl text-base font-semibold cursor-pointer inline-flex items-center space-x-2 hover:shadow-xl hover:shadow-accent-purple/30 transition-all duration-200"
+                    className="btn-primary px-6 py-2.5 rounded-xl cursor-pointer inline-block"
                   >
-                    <Upload className="w-5 h-5" />
-                    <span>Choose Image</span>
+                    Choose Image
                   </label>
-                  <p className="text-xs text-gray-500 mt-4">Supports JPG, PNG • Max 10MB</p>
+                  <p className="text-xs text-gray-500 mt-3">JPG, PNG — max 10MB</p>
                 </div>
               ) : (
-                <div className="glass-effect rounded-2xl p-6 border border-dark-border">
-                  <div className="relative group">
+                <div className="border border-dark-border rounded-xl p-4">
+                  <div className="relative">
                     <img
                       src={imagePreview}
-                      alt="Selected math problem"
-                      className="w-full max-h-80 object-contain rounded-xl border border-dark-border"
+                      alt="Uploaded problem"
+                      className="w-full max-h-72 object-contain rounded-lg"
                     />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-center justify-center">
-                      <div className="flex space-x-3">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCrop({
-                              unit: '%',
-                              x: 25,
-                              y: 25,
-                              width: 50,
-                              height: 50
-                            });
-                            setCompletedCrop(null);
-                            setShowCropModal(true);
-                          }}
-                          className="bg-accent-purple/90 hover:bg-accent-purple text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 hover:shadow-lg"
-                        >
-                          <Crop className="w-4 h-4" />
-                          <span>Crop</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={removeImage}
-                          className="bg-red-600/90 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-all duration-200 hover:shadow-lg"
-                        >
-                          <X className="w-4 h-4" />
-                          <span>Remove</span>
-                        </button>
-                      </div>
+                    <div className="flex gap-2 mt-3 justify-center">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCrop({ unit: "%", x: 25, y: 25, width: 50, height: 50 });
+                          setCompletedCrop(null);
+                          setShowCropModal(true);
+                        }}
+                        className="flex items-center gap-1.5 px-4 py-2 text-sm bg-accent-purple/20 text-accent-purple border border-accent-purple/30 rounded-lg hover:bg-accent-purple/30 transition-colors"
+                      >
+                        <Crop className="w-4 h-4" />
+                        Crop
+                      </button>
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="flex items-center gap-1.5 px-4 py-2 text-sm bg-red-600/20 text-red-400 border border-red-600/30 rounded-lg hover:bg-red-600/30 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                        Remove
+                      </button>
                     </div>
-                    {/* Corner buttons for mobile/small screens */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setCrop({
-                          unit: '%',
-                          x: 25,
-                          y: 25,
-                          width: 50,
-                          height: 50
-                        });
-                        setCompletedCrop(null);
-                        setShowCropModal(true);
-                      }}
-                      className="absolute top-3 left-3 bg-accent-purple hover:bg-accent-purple/90 text-white p-2 rounded-full shadow-lg md:hidden"
-                      title="Crop image"
-                    >
-                      <Crop className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute top-3 right-3 bg-red-600 hover:bg-red-600/90 text-white p-2 rounded-full shadow-lg md:hidden"
-                      title="Remove image"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="mt-4 text-center">
-                    <p className="text-sm text-gray-400">
-                      Image uploaded successfully!
-                    </p>
                   </div>
                 </div>
               )}
@@ -414,18 +310,22 @@ const MathSolver = ({ apiConfig }) => {
 
           <button
             type="submit"
-            disabled={loading || (inputMode === 'text' && !question.trim()) || (inputMode === 'image' && !selectedImage)}
-            className="btn-primary w-full py-2 md:py-3 rounded-xl flex items-center justify-center space-x-2"
+            disabled={
+              loading ||
+              (inputMode === "text" && !question.trim()) ||
+              (inputMode === "image" && !selectedImage)
+            }
+            className="btn-primary w-full py-3 rounded-xl flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                <span>Solving...</span>
+                Solving...
               </>
             ) : (
               <>
                 <Send className="w-5 h-5" />
-                <span>Solve Problem</span>
+                Solve Problem
               </>
             )}
           </button>
@@ -434,20 +334,16 @@ const MathSolver = ({ apiConfig }) => {
             type="button"
             onClick={clearAll}
             disabled={loading || (!question.trim() && !selectedImage && !solution)}
-            className="btn-secondary w-full py-2 md:py-3 rounded-xl flex items-center justify-center space-x-2 mt-3"
+            className="btn-secondary w-full py-2.5 rounded-xl"
           >
-            <RotateCcw className="w-5 h-5" />
-            <span>Clear All</span>
+            Clear
           </button>
         </form>
 
-        {/* Example Questions */}
-        {inputMode === 'text' && (
-          <div className="mt-6">
-            <div className="flex items-center space-x-2 mb-3">
-              <Lightbulb className="w-4 h-4 text-accent-orange" />
-              <p className="text-sm text-gray-400">Try these examples:</p>
-            </div>
+        {/* Example questions */}
+        {inputMode === "text" && (
+          <div className="mt-5">
+            <p className="text-sm text-gray-400 mb-2">Try an example:</p>
             <div className="flex flex-wrap gap-2">
               {EXAMPLE_QUESTIONS.map((example, index) => (
                 <button
@@ -464,141 +360,106 @@ const MathSolver = ({ apiConfig }) => {
         )}
       </div>
 
-      {/* Loading State */}
+      {/* Loading */}
       {loading && (
-        <div className="glass-effect rounded-2xl p-8 md:p-12 text-center">
-          <div className="inline-block p-4 bg-accent-purple/20 rounded-full mb-4">
-            <Loader2 className="w-12 h-12 text-accent-purple animate-spin" />
-          </div>
-          <h3 className="text-xl font-semibold mb-2">
-            Analyzing your problem...
-          </h3>
-          <p className="text-gray-400">Working on the solution</p>
+        <div className="glass-effect rounded-2xl p-10 text-center">
+          <Loader2 className="w-10 h-10 text-accent-purple animate-spin mx-auto mb-4" />
+          <p className="text-gray-300 font-medium">Solving your problem...</p>
         </div>
       )}
 
-      {/* Solution Display */}
+      {/* Solution */}
       {solution && !loading && (
-        <div className="space-y-4 md:space-y-6">
-          {/* Topic Badge and Final Answer */}
-          <div className="glass-effect rounded-2xl p-4 md:p-6 shadow-2xl">
+        <div className="space-y-4">
+          {/* Final Answer */}
+          <div className="glass-effect rounded-2xl p-4 md:p-6">
             <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center space-x-2">
-                <TrendingUp className="w-5 h-5 text-accent-green" />
-                <h2 className="text-xl font-semibold">Solution</h2>
-              </div>
+              <h2 className="text-xl font-semibold">Solution</h2>
               {solution.topic && (
-                <span
-                  className={`topic-badge ${getTopicColor(solution.topic)}`}
-                >
+                <span className={`topic-badge ${getTopicColor(solution.topic)}`}>
                   {solution.topic}
                 </span>
               )}
             </div>
-
-            <div className="bg-gradient-to-r from-accent-green/10 to-accent-blue/10 border border-accent-green/30 rounded-xl p-4 md:p-6">
-              <p className="text-sm text-gray-400 mb-2">Final Answer:</p>
+            <div className="bg-accent-green/10 border border-accent-green/30 rounded-xl p-4">
+              <p className="text-sm text-gray-400 mb-1">Final Answer:</p>
               <p
-                className="text-lg md:text-2xl font-bold text-accent-green break-words whitespace-pre-line"
-                style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+                className="text-xl font-bold text-accent-green whitespace-pre-line"
+                style={{ wordBreak: "break-word" }}
               >
                 {solution.finalAnswer}
               </p>
             </div>
           </div>
 
-          {/* Step-by-Step Solution */}
+          {/* Steps */}
           {solution.steps && solution.steps.length > 0 && (
             <StepAccordion steps={solution.steps} />
           )}
 
-          {/* Graph Visualization */}
+          {/* Graph */}
           {solution.graphData && solution.graphData.type !== "none" && (
             <GraphVisualizer graphData={solution.graphData} />
           )}
         </div>
       )}
 
-      {/* Empty State */}
+      {/* Empty state */}
       {!solution && !loading && (
-        <div className="glass-effect rounded-2xl p-8 md:p-12 text-center">
-          <div className="inline-block p-4 bg-accent-purple/20 rounded-full mb-4">
-            <Calculator className="w-12 h-12 text-accent-purple" />
-          </div>
-          <h3 className="text-xl font-semibold mb-2">
-            Ready to solve any math problem!
-          </h3>
-          <p className="text-gray-400">
-            Enter a question above or try one of the examples
-          </p>
+        <div className="glass-effect rounded-2xl p-10 text-center">
+          <p className="text-lg font-medium text-gray-300 mb-1">Ready to solve!</p>
+          <p className="text-gray-400 text-sm">Type a math problem above or try an example.</p>
         </div>
       )}
 
       {/* Crop Modal */}
       {showCropModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="glass-effect rounded-2xl p-6 max-w-4xl w-full max-h-[90vh] overflow-auto border border-dark-border shadow-2xl">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-accent-purple/20 rounded-lg">
-                  <Crop className="w-6 h-6 text-accent-purple" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
-                    Crop Your Image
-                  </h3>
-                  <p className="text-sm text-gray-400">Select the area containing your math problem</p>
-                </div>
-              </div>
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="glass-effect rounded-2xl p-6 max-w-3xl w-full max-h-[90vh] overflow-auto border border-dark-border">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Crop Image</h3>
               <button
                 onClick={() => setShowCropModal(false)}
-                className="p-2 hover:bg-dark-hover rounded-lg transition-colors text-gray-400 hover:text-white"
+                className="p-2 hover:bg-dark-hover rounded-lg transition-colors"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
-            <div className="mb-6">
-              {imagePreview && (
-                <div className="bg-dark-hover rounded-xl p-4 border border-dark-border">
-                  <ReactCrop
-                    crop={crop}
-                    onChange={(c) => setCrop(c)}
-                    onComplete={handleCropComplete}
-                    className="rounded-lg overflow-hidden"
-                  >
-                    <img
-                      ref={imgRef}
-                      src={imagePreview}
-                      alt="Crop preview"
-                      className="max-w-full max-h-96 object-contain rounded-lg"
-                      onLoad={() => {
-                        // Reset crop when image loads to ensure proper dimensions
-                        setCrop({
-                          unit: '%',
-                          x: 25,
-                          y: 25,
-                          width: 50,
-                          height: 50
-                        });
-                      }}
-                    />
-                  </ReactCrop>
-                </div>
-              )}
-            </div>
-            <div className="flex justify-end space-x-3">
+            <p className="text-sm text-gray-400 mb-4">
+              Select the area containing your math problem
+            </p>
+            {imagePreview && (
+              <div className="bg-dark-hover rounded-xl p-4 mb-4">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(c) => setCrop(c)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                >
+                  <img
+                    ref={imgRef}
+                    src={imagePreview}
+                    alt="Crop preview"
+                    className="max-w-full max-h-96 object-contain rounded-lg"
+                    onLoad={() =>
+                      setCrop({ unit: "%", x: 25, y: 25, width: 50, height: 50 })
+                    }
+                  />
+                </ReactCrop>
+              </div>
+            )}
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowCropModal(false)}
-                className="btn-secondary px-6 py-2.5 rounded-lg"
+                className="btn-secondary px-5 py-2 rounded-lg"
               >
                 Cancel
               </button>
               <button
                 onClick={applyCrop}
-                className="btn-primary px-6 py-2.5 rounded-lg flex items-center space-x-2"
+                className="btn-primary px-5 py-2 rounded-lg flex items-center gap-2"
               >
                 <Crop className="w-4 h-4" />
-                <span>Apply Crop</span>
+                Apply Crop
               </button>
             </div>
           </div>
