@@ -193,7 +193,7 @@ const Homepage = () => {
                     key={calc.id}
                     className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 bg-dark-hover rounded-lg border border-dark-border gap-3"
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="text-white font-medium break-words">
                         {calc.question}
                       </p>
@@ -208,7 +208,7 @@ const Homepage = () => {
                           state: { question: calc.question },
                         })
                       }
-                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg bg-accent-purple/20 text-accent-purple border border-accent-purple/30 hover:bg-accent-purple/30 transition-colors"
+                      className="w-fit self-start sm:self-auto flex items-center justify-center gap-1.5 px-3.5 py-1.5 text-sm font-medium rounded-lg bg-accent-purple/20 text-accent-purple border border-accent-purple/30 hover:bg-accent-purple/30 transition-colors"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       Recalculate

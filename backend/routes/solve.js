@@ -48,11 +48,11 @@ router.post("/", authenticateToken, upload.single("image"), async (req, res) => 
       });
     }
 
-    const aiProvider = process.env.AI_PROVIDER || provider || "gemini";
+    const aiProvider = process.env.AI_PROVIDER || provider || "openrouter";
     const aiApiKey = process.env.API_KEY;
     const aiModel =
       process.env.MODEL_NAME ||
-      (modelName && modelName !== "undefined" ? modelName : "gemini-3.6-flash");
+      (modelName && modelName !== "undefined" ? modelName : "nemotron-3-ultra-550b-a55b:free");
 
     if (!aiApiKey) {
       return res.status(400).json({ success: false, error: "API Key not configured" });

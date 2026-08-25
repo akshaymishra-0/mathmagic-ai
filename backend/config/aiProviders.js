@@ -16,11 +16,6 @@ export const aiProviders = {
       max_tokens: 8192,
     }),
   },
-
-  // Google Gemini — different URL/request format, handled separately in AIService
-  gemini: {
-    name: "Google Gemini",
-  },
 };
 
 export const getProvider = (providerName) => {

@@ -61,8 +61,8 @@ function generateGraphPoints(equation, domain) {
 
 // ------------------------------------------------------------------
 
-// Clean a string that might contain embedded JSON or markdown so it's
-// readable plain text.
+// Clean a string that might contain embedded JSON, markdown, or LaTeX macros
+// so it is rendered as clean, human-readable plain text.
 function cleanText(str) {
   if (!str || typeof str !== "string") return str || "";
 
@@ -76,7 +76,6 @@ function cleanText(str) {
     try {
       const parsed = JSON.parse(text);
       if (typeof parsed === "object" && !Array.isArray(parsed)) {
-        // Pick the most likely prose field
         const prose =
           parsed.text ||
           parsed.value ||
@@ -88,7 +87,6 @@ function cleanText(str) {
         if (typeof prose === "string") {
           text = prose.trim();
         } else {
-          // Fall back: join all string values
           text = Object.values(parsed)
             .filter((v) => typeof v === "string")
             .join("\n")
@@ -101,11 +99,48 @@ function cleanText(str) {
           .trim();
       }
     } catch {
-      // Not valid JSON — leave as-is
+      // Not valid JSON — proceed
     }
   }
 
-  // Strip markdown formatting
+  // Convert LaTeX fractions: \frac{a}{b} -> (a)/(b)
+  text = text.replace(/\\frac\{([^{}]+)\}\{([^{}]+)\}/g, "($1)/($2)");
+
+  // Convert LaTeX square roots: \sqrt{x} -> √(x)
+  text = text.replace(/\\sqrt\{([^{}]+)\}/g, "√($1)");
+
+  // Convert common LaTeX math symbols to clean Unicode
+  text = text
+    .replace(/\\times\b/g, " × ")
+    .replace(/\\cdot\b/g, " · ")
+    .replace(/\\div\b/g, " ÷ ")
+    .replace(/\\pm\b/g, " ± ")
+    .replace(/\\approx\b/g, " ≈ ")
+    .replace(/\\neq\b/g, " ≠ ")
+    .replace(/\\leq?\b/g, " ≤ ")
+    .replace(/\\geq?\b/g, " ≥ ")
+    .replace(/\\infty\b/g, " ∞ ")
+    .replace(/\\pi\b/g, "π")
+    .replace(/\\theta\b/g, "θ")
+    .replace(/\\alpha\b/g, "α")
+    .replace(/\\beta\b/g, "β")
+    .replace(/\\Delta\b/g, "Δ")
+    .replace(/\\int\b/g, "∫")
+    .replace(/\\sum\b/g, "∑")
+    .replace(/\\text\{([^{}]+)\}/g, "$1")
+    .replace(/\\mathbf\{([^{}]+)\}/g, "$1")
+    .replace(/\\mathrm\{([^{}]+)\}/g, "$1")
+    .replace(/\\left|\\right/g, "")
+    .replace(/\\quad|\\qquad/g, "  ");
+
+  // Remove LaTeX inline and display math delimiters: \( \), \[ \], $$, $
+  text = text
+    .replace(/\\\[([\s\S]*?)\\\]/g, "$1")
+    .replace(/\\\(([\s\S]*?)\\\)/g, "$1")
+    .replace(/\$\$([\s\S]*?)\$\$/g, "$1")
+    .replace(/\$([^$\n]+)\$/g, "$1");
+
+  // Strip markdown formatting & special characters
   text = text
     .replace(/\*\*(.+?)\*\*/gs, "$1")  // **bold** -> bold
     .replace(/\*(.+?)\*/gs, "$1")        // *italic* -> italic
@@ -117,71 +152,73 @@ function cleanText(str) {
     .replace(/\\n/g, "\n")              // literal \n -> actual newline
     .replace(/\\t/g, "  ")              // literal \t -> spaces
     .replace(/\\r/g, "")                // literal \r -> removed
+    .replace(/\n{3,}/g, "\n\n")         // Collapse multiple consecutive blank lines
     .trim();
 
   return text;
+}
+
+// Helper to check if the user specifically asked for a graph/plot
+function isGraphRequested(question) {
+  if (!question || typeof question !== "string") return false;
+  return /\b(graph|plot|draw|sketch|visualize|chart|curve)\b/i.test(question);
 }
 
 // ------------------------------------------------------------------
 
 export class AIService {
   constructor(provider, apiKey, modelName) {
-    this.providerName = provider;
+    this.providerName = provider || "openrouter";
     this.apiKey = apiKey;
     this.modelName = modelName;
-    this.provider = getProvider(provider);
+    this.provider = getProvider(this.providerName);
   }
 
   createMathPrompt(question) {
+    const graphAsked = isGraphRequested(question);
+
     return [
       {
         role: "system",
-        content: `You are an expert mathematics tutor AI. Solve math problems with clear, detailed, educational explanations.
+        content: `You are an expert mathematics tutor AI. Solve math problems with clear, detailed, highly educational explanations in clean, readable notation.
 
-        **IMPORTANT: Respond ONLY with valid JSON. No text before or after. No markdown code blocks.**
+        **IMPORTANT: Respond ONLY with valid JSON. No conversational text before or after. No markdown fences.**
 
         **RESPONSE FORMAT (JSON only):**
         {
-          "topic": "Branch of mathematics (e.g., Calculus, Algebra, Geometry)",
-          "finalAnswer": "Clear, concise final answer",
+          "topic": "Branch of mathematics (e.g., Calculus, Algebra, Geometry, Trigonometry, Arithmetic)",
+          "finalAnswer": "Clear, concise final answer with appropriate units if applicable",
           "steps": [
             {
-              "title": "Step title",
-              "explanation": "Detailed explanation of this step",
-              "formula": "Any formula used (optional)",
-              "calculation": "The actual calculation broken down (optional)"
+              "title": "Step 1: Description of what this step does",
+              "explanation": "Clear step explanation in simple, easy-to-understand language",
+              "formula": "Formula used (optional, in readable notation like 'a² + b² = c²')",
+              "calculation": "Vertical or breakdown calculation lines (optional)"
             }
           ],
-          "graphData": {
+          "graphData": ${
+            graphAsked
+              ? `{
             "type": "line",
-            "equation": "The math expression using x as the variable. Use standard notation: x^2, sin(x), 2*x+3, sqrt(x), etc.",
-            "domain": {"min": number, "max": number}
+            "equation": "Standard math expression using x as variable (e.g. x^2, 2*x + 3, sin(x), sqrt(x))",
+            "domain": {"min": -10, "max": 10}
+          }`
+              : `null`
           }
         }
 
-        For non-graphing problems, set "graphData": null.
+        **GRAPH RULES:**
+        - ONLY provide "graphData" if the user EXPLICITLY asked to graph, plot, draw, sketch, or visualize a function/equation.
+        - For all standard calculations, algebra equations, word problems, derivatives, integrals, or questions without graphing keywords, "graphData" MUST BE null.
 
-        IMPORTANT GRAPH RULES:
-        - Only set graphData if the problem explicitly asks to graph, plot, or visualize a function.
-        - The "equation" must be a valid mathematical expression with x as the variable.
-        - Choose domain min/max to show the full shape of the graph (include negative values when relevant).
-        - Do NOT include "points" or "range" — those are computed automatically.
-        - Use "line" for continuous functions.
-
-        Solve this problem: ${question}
-
-        **RULES:**
-        1. Break every problem into as many detailed steps as possible.
-        2. Start from basics and build understanding step by step.
-        3. Show calculations vertically, not horizontally.
-        4. Explain the reasoning behind each step.
-        5. Show all intermediate calculations with proper notation.
-        6. Use numbered step titles (Step 1, Step 2, etc.).
-        7. Be thorough and educational — assume the student is 10 years old.
-        8. Set graphData to null if the problem doesn't involve graphing.
-        9. ALWAYS respond with valid JSON only.
-        10. Double-check your calculations and final answer.
-        11. If asked about yourself, say you are MathMagic, an AI math tutor developed by Akshay Mishra.`,
+        IMPORTANT FORMATTING & MATH RULES:
+        1. Always use clean, human-readable math notation (use ×, ÷, √, ², ³, π, θ, / instead of complex LaTeX macros).
+        2. Break every problem down into intuitive, sequential steps.
+        3. Explain each step clearly so a beginner student can follow easily.
+        4. In the calculation field, display multi-step computations line by line.
+        5. Double check arithmetic and final answer for 100% accuracy.
+        6. If asked about yourself, say you are MathMagic, an AI math tutor developed by Akshay Mishra.
+        7. Respond with valid JSON only.`,
       },
       {
         role: "user",
@@ -193,69 +230,38 @@ export class AIService {
   async solveMath(question) {
     try {
       const messages = this.createMathPrompt(question);
+      const provider = this.provider;
+      const requestBody = provider.formatRequest(this.modelName, messages);
 
-      if (this.providerName === "gemini") {
-        return await this.solveWithGemini(messages);
-      } else {
-        return await this.solveWithOpenRouter(messages);
-      }
+      const response = await axios.post(provider.baseURL, requestBody, {
+        headers: provider.headers(this.apiKey),
+      });
+
+      const content = response.data.choices?.[0]?.message?.content || "";
+      return this.parseResponse(content, question);
     } catch (error) {
-      const errMsg =
+      let errMsg =
         error.response?.data?.error?.message ||
         error.response?.data?.error ||
         error.message;
+
+      if (error.response?.status === 401 || errMsg === "User not found.") {
+        errMsg = "Invalid API Key. Please verify your API key in backend/.env.";
+      } else if (error.response?.status === 429) {
+        errMsg = "Rate limit reached for this AI model. Please wait a minute and try again.";
+      }
+
       console.error("AI Service Error:", errMsg);
-      throw new Error(`Failed to solve problem: ${errMsg}`);
+      throw new Error(errMsg);
     }
   }
 
-  // Call Google Gemini API directly
-  // Gemini uses a different URL and request format from OpenAI-compatible APIs
-  async solveWithGemini(messages) {
-    const systemPrompt = messages[0].content;
-    const userMessage = messages[1].content;
-
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.modelName}:generateContent?key=${this.apiKey}`;
-
-    const response = await axios.post(url, {
-      system_instruction: {
-        parts: [{ text: systemPrompt }],
-      },
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: userMessage }],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.3,
-        maxOutputTokens: 8192,
-      },
-    });
-
-    const candidate = response.data?.candidates?.[0];
-    if (!candidate || !candidate.content?.parts) {
-      throw new Error("No response generated by Gemini model");
-    }
-
-    const content = candidate.content.parts.map((p) => p.text || "").join("");
-    return this.parseResponse(content);
-  }
-
-  // Call OpenRouter API (OpenAI-compatible format)
-  async solveWithOpenRouter(messages) {
-    const provider = this.provider;
-    const requestBody = provider.formatRequest(this.modelName, messages);
-    const response = await axios.post(provider.baseURL, requestBody, {
-      headers: provider.headers(this.apiKey),
-    });
-    const content = response.data.choices[0].message.content;
-    return this.parseResponse(content);
-  }
-
-  parseResponse(content) {
+  parseResponse(content, question) {
     try {
-      let cleanContent = content.trim();
+      let cleanContent = (content || "").trim();
+
+      // Strip thinking tags if any (e.g. DeepSeek-R1 on OpenRouter)
+      cleanContent = cleanContent.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
 
       // Strip markdown code fences if present
       cleanContent = cleanContent.replace(/^[\s\S]*?```(?:json)?\s*\n?/, "");
@@ -280,10 +286,10 @@ export class AIService {
           finalAnswer: content,
           steps: [{ title: "Solution", explanation: content, formula: "", calculation: "" }],
           graphData: null,
-        });
+        }, question);
       }
 
-      return this.formatParsed(parsed);
+      return this.formatParsed(parsed, question);
     } catch (error) {
       console.error("Parse Error:", error);
       return this.formatParsed({
@@ -291,12 +297,12 @@ export class AIService {
         finalAnswer: content,
         steps: [{ title: "Solution", explanation: content, formula: "", calculation: "" }],
         graphData: null,
-      });
+      }, question);
     }
   }
 
   // Normalize the AI response for frontend consumption.
-  formatParsed(parsed) {
+  formatParsed(parsed, question) {
     let obj;
     try {
       obj = JSON.parse(JSON.stringify(parsed));
@@ -343,8 +349,8 @@ export class AIService {
         : [];
     }
 
-    // Build graph data — always compute points ourselves for accuracy.
-    if (obj.graphData && obj.graphData.equation) {
+    // Build graph data — only if the user explicitly asked for a graph
+    if (obj.graphData && obj.graphData.equation && isGraphRequested(question)) {
       const equation = String(obj.graphData.equation);
       const domain = obj.graphData.domain || { min: -10, max: 10 };
 

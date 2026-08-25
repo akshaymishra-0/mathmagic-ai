@@ -2,7 +2,7 @@
 
 A full-stack web application designed to help students and developers solve mathematical problems step-by-step with structured reasoning, interactive function graphing, and OCR-based image input.
 
-Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **Google Gemini API**.
+Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **OpenRouter API**.
 
 ---
 
@@ -31,12 +31,12 @@ Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **Google 
                      │      REST Backend      │
                      └─────┬────────────┬─────┘
                            │            │
-             ┌─────────────┴──┐      ┌──┴─────────────┐
-             ▼                ▼      ▼                ▼
-     ┌──────────────┐ ┌────────────┐ ┌─────────────┐ ┌──────────────┐
-     │ MongoDB Atlas│ │ Google     │ │  OCR.space  │ │ Math Evaluator│
-     │  (Mongoose)  │ │ Gemini API │ │  (Image OCR)│ │ (Graph Gen)  │
-     └──────────────┘ └────────────┘ └─────────────┘ └──────────────┘
+            ┌──────────────┴──┐      ┌──┴────────────────────┐
+            ▼                 ▼      ▼                       ▼
+     ┌──────────────┐ ┌────────────┐ ┌─────────────┐ ┌───────────────┐
+     │ MongoDB Atlas│ │ OpenRouter │ │  OCR.space  │ │ Math Evaluator│
+     │  (Mongoose)  │ │   AI API   │ │  (Image OCR)│ │ (Graph Gen)   │
+     └──────────────┘ └────────────┘ └─────────────┘ └───────────────┘
 ```
 
 ### Frontend
@@ -50,7 +50,7 @@ Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **Google 
 - **Runtime**: Node.js with Express (ES Modules)
 - **Database**: MongoDB with Mongoose ODM
 - **Authentication**: JWT (`jsonwebtoken`) & `bcryptjs`
-- **AI Integration**: Google Gemini REST API (`gemini-2.0-flash`)
+- **AI Integration**: OpenRouter API (`meta-llama/llama-3.3-70b-instruct:free`, `deepseek/deepseek-r1:free`, etc.)
 - **Image Handling**: Multer (In-memory buffer) + OCR.space API
 - **Security**: `helmet`, `express-rate-limit`, `cors`, `dotenv`
 
@@ -98,7 +98,7 @@ MATHMAGIC/
 - **Node.js** (v18 or higher)
 - **npm**
 - **MongoDB Atlas** account (free cluster)
-- **Google Gemini API Key** ([Google AI Studio](https://aistudio.google.com/app/apikey) — free)
+- **OpenRouter API Key** ([OpenRouter Keys](https://openrouter.ai/keys) — free models available)
 
 ---
 
@@ -119,9 +119,9 @@ FRONTEND_URL=http://localhost:5173
 MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/mathmagic?retryWrites=true&w=majority
 JWT_SECRET=your_super_secret_jwt_key_here
 
-AI_PROVIDER=gemini
-API_KEY=your_gemini_api_key_here
-MODEL_NAME=gemini-2.0-flash
+AI_PROVIDER=openrouter
+API_KEY=your_openrouter_api_key_here
+MODEL_NAME=meta-llama/llama-3.3-70b-instruct:free
 
 # Optional: For image upload OCR (get from https://ocr.space/ocrapi)
 OCR_SPACE_API_KEY=your_ocr_key
