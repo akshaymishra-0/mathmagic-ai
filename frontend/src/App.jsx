@@ -7,7 +7,7 @@ import Signup from "./components/auth/Signup";
 import Profile from "./components/Profile";
 import ConfirmationModal from "./components/ConfirmationModal";
 import axios from "axios";
-import { ArrowRight, ArrowLeft, LogOut, User, RotateCcw } from "lucide-react";
+import { ArrowRight, ArrowLeft, LogOut, User, RotateCcw, Calculator } from "lucide-react";
 
 function App() {
   return (
@@ -35,13 +35,18 @@ function AppContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div
-              className="cursor-pointer"
+              className="flex items-center gap-3 cursor-pointer group"
               onClick={() => navigate("/")}
             >
-              <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent">
-                MathMagic
-              </h1>
-              <p className="text-xs text-gray-400">AI-powered math solver</p>
+              <div className="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gradient-to-br from-accent-purple/20 to-accent-blue/20 border border-accent-purple/30 flex items-center justify-center text-accent-purple flex-shrink-0 group-hover:border-accent-purple/60 transition-colors shadow-sm">
+                <Calculator className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-accent-purple to-accent-blue bg-clip-text text-transparent leading-tight">
+                  MathMagic
+                </h1>
+                <p className="text-xs text-gray-400">AI-powered math solver</p>
+              </div>
             </div>
 
             <div className="flex items-center space-x-3">

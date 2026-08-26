@@ -15,12 +15,44 @@ const EXAMPLE_QUESTIONS = [
   "Solve the system: 2x + y = 7 and x - y = 2",
 ];
 
+const MATH_QUOTES = [
+  "“Mathematics is the language with which the universe was written.” — Galileo",
+  "“Pure mathematics is, in its way, the poetry of logical ideas.” — Albert Einstein",
+  "“Without mathematics, there's nothing you can do. Everything around you is math.” — Shakuntala Devi",
+  "“There should be no such thing as boring mathematics.” — Edsger Dijkstra",
+  "“In mathematics, the art of proposing a question is higher than solving it.” — Georg Cantor",
+  "“Mathematics is not about numbers or algorithms: it is about understanding.” — William Thurston",
+  "💡 Fun Fact: A circle has 360° because ancient Babylonians used a base-60 number system!",
+  "“An equation means nothing to me unless it expresses a thought of truth.” — Srinivasa Ramanujan",
+  "💡 Fun Fact: Zero is the only number that cannot be represented in Roman numerals.",
+  "“The only way to learn mathematics is to do mathematics.” — Paul Halmos",
+  "🔍 Breaking down formulas and simplifying terms step-by-step...",
+  "📐 Deriving logical steps and verifying calculation precision...",
+  "💡 Fun Fact: 2 and 5 are the only prime numbers that end in 2 or 5!",
+  "“Go down deep enough into anything and you will find mathematics.” — Dean Schlicter",
+  "⚡ Analyzing mathematical patterns and formulating clear steps...",
+];
+
 const MathSolver = () => {
   const location = useLocation();
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [solution, setSolution] = useState(null);
   const [inputMode, setInputMode] = useState("text"); // 'text' or 'image'
+  const [quoteIndex, setQuoteIndex] = useState(0);
+
+  // Rotate quotes every 1 second while loading
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      // Pick a random starting quote
+      setQuoteIndex(Math.floor(Math.random() * MATH_QUOTES.length));
+      interval = setInterval(() => {
+        setQuoteIndex((prev) => (prev + 1) % MATH_QUOTES.length);
+      }, 5000);
+    }
+    return () => clearInterval(interval);
+  }, [loading]);
 
   // Image upload states
   const [selectedImage, setSelectedImage] = useState(null);
@@ -362,9 +394,16 @@ const MathSolver = () => {
 
       {/* Loading */}
       {loading && (
-        <div className="glass-effect rounded-2xl p-10 text-center">
-          <Loader2 className="w-10 h-10 text-accent-purple animate-spin mx-auto mb-4" />
-          <p className="text-gray-300 font-medium">Solving your problem...</p>
+        <div className="glass-effect rounded-2xl p-8 md:p-10 text-center space-y-4">
+          <Loader2 className="w-10 h-10 text-accent-purple animate-spin mx-auto" />
+          <div>
+            <p className="text-gray-200 font-semibold text-lg">Solving your problem...</p>
+            <div className="mt-3 min-h-[48px] flex items-center justify-center">
+              <p className="text-gray-400 text-sm italic max-w-lg mx-auto transition-opacity duration-300">
+                {MATH_QUOTES[quoteIndex]}
+              </p>
+            </div>
+          </div>
         </div>
       )}
 

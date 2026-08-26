@@ -9,7 +9,8 @@ Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **OpenRou
 ## 🌟 Key Highlights & Features
 
 - **Step-by-Step Educational Solutions**: Breaks down mathematical problems across Algebra, Calculus, Trigonometry, and Geometry into intuitive steps with formulas and calculations.
-- **Accurate Mathematical Graphing**: Parses equations and evaluates coordinate points mathematically on the backend across four quadrants, rendered interactively using Recharts.
+- **Accurate Mathematical Graphing**: Parses equations and evaluates coordinate points mathematically on the backend across four quadrants, rendered interactively using Recharts when requested.
+- **Engaging Loading Screen**: Features rotating inspirational math quotes and trivia while problems are being solved.
 - **Image Upload with Crop & OCR**: Allows users to take photos of handwritten or printed math problems, crop the equation area, and automatically extract text using OCR.
 - **Secure JWT Authentication**: User registration and login with bcrypt password hashing and token-based session persistence.
 - **Persistent User History**: Saves recent calculations to MongoDB with one-click recalculation.
@@ -20,23 +21,23 @@ Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **OpenRou
 ## 🏗️ Architecture & Tech Stack
 
 ```
-                     ┌────────────────────────┐
-                     │   React + Vite Client  │
-                     │  (Tailwind, Recharts)  │
-                     └───────────┬────────────┘
-                                 │ HTTP / JSON
-                                 ▼
-                     ┌────────────────────────┐
-                     │   Node.js / Express    │
-                     │      REST Backend      │
-                     └─────┬────────────┬─────┘
-                           │            │
-            ┌──────────────┴──┐      ┌──┴────────────────────┐
-            ▼                 ▼      ▼                       ▼
-     ┌──────────────┐ ┌────────────┐ ┌─────────────┐ ┌───────────────┐
-     │ MongoDB Atlas│ │ OpenRouter │ │  OCR.space  │ │ Math Evaluator│
-     │  (Mongoose)  │ │   AI API   │ │  (Image OCR)│ │ (Graph Gen)   │
-     └──────────────┘ └────────────┘ └─────────────┘ └───────────────┘
+                                      ┌────────────────────────┐
+                                      │   React + Vite Client  │
+                                      │  (Tailwind, Recharts)  │
+                                      └───────────┬────────────┘
+                                                  │ HTTP / JSON
+                                                  ▼
+                                      ┌────────────────────────┐
+                                      │   Node.js / Express    │
+                                      │      REST Backend      │
+                                      └─────┬────────────┬─────┘
+                                            │            │
+                      ┌─────────────────────┴──┐       ┌─┴────────────────────┐
+                      ▼                        ▼       ▼                      ▼
+               ┌──────────────┐      ┌────────────┐ ┌─────────────┐     ┌───────────────┐
+               │ MongoDB Atlas│      │ OpenRouter │ │  OCR.space  │     │ Math Evaluator│
+               │  (Mongoose)  │      │   AI API   │ │  (Image OCR)│     │ (Graph Gen)   │
+               └──────────────┘      └────────────┘ └─────────────┘     └───────────────┘
 ```
 
 ### Frontend
@@ -59,8 +60,9 @@ Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **OpenRou
 ## 📐 Engineering Highlights
 
 1. **Deterministic Graph Point Computation**: Rather than relying on LLM hallucinated coordinates, the backend prompts the AI for the raw mathematical equation, cleans and compiles it into a safe JavaScript function (`toJSExpression`), and evaluates 100 evenly-spaced points across the domain.
-2. **Robust Response Sanitization**: A custom `cleanText()` pipeline strips unwanted markdown wrappers, embedded JSON fragments, and escape artifacts so the client always receives pristine, readable text.
-3. **In-Memory Image Pipeline**: Uploaded math images are processed in-memory using Multer buffers and forwarded directly to OCR, preventing unneeded disk I/O and temporary file buildup.
+2. **On-Demand Graph Triggering**: Graph data is only evaluated and generated when the user's prompt explicitly requests visualization (e.g. `plot`, `draw graph`), reducing unnecessary computations.
+3. **Robust Response Sanitization**: A custom `cleanText()` pipeline strips unwanted markdown wrappers, embedded JSON fragments, and escape artifacts so the client always receives pristine, readable text.
+4. **In-Memory Image Pipeline**: Uploaded math images are processed in-memory using Multer buffers and forwarded directly to OCR, preventing unneeded disk I/O and temporary file buildup.
 
 ---
 
@@ -69,7 +71,7 @@ Built with **React**, **Node.js/Express**, **MongoDB**, and powered by **OpenRou
 ```text
 MATHMAGIC/
 ├── backend/
-│   ├── config/             # AI provider configuration
+│   ├── config/             # AI provider configuration (OpenRouter)
 │   ├── models/             # Mongoose schemas (User, Calculation)
 │   ├── routes/             # Express route controllers (auth, solve)
 │   ├── services/           # AI service & OCR handling
@@ -77,6 +79,8 @@ MATHMAGIC/
 │   ├── package.json
 │   └── server.js           # Server entry point & middleware setup
 ├── frontend/
+│   ├── public/
+│   │   └── favicon.svg     # Application logo & favicon
 │   ├── src/
 │   │   ├── components/     # MathSolver, GraphVisualizer, StepAccordion, etc.
 │   │   ├── contexts/       # AuthContext for global session state
@@ -121,8 +125,7 @@ JWT_SECRET=your_super_secret_jwt_key_here
 
 AI_PROVIDER=openrouter
 API_KEY=your_openrouter_api_key_here
-MODEL_NAME=meta-llama/llama-3.3-70b-instruct:free
-
+MODEL_NAME=your_openrouter_model_name
 # Optional: For image upload OCR (get from https://ocr.space/ocrapi)
 OCR_SPACE_API_KEY=your_ocr_key
 ```
@@ -159,6 +162,9 @@ npm run dev
 ---
 
 ## 🔌 API Reference
+
+### System Endpoints
+- `GET /health` — Check server status, active AI provider, and model
 
 ### Auth Endpoints (`/api/auth`)
 - `POST /api/auth/signup` — Create user account & receive JWT token
